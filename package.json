@@ -1,0 +1,47 @@
+{
+  "name": "itsm-hackathon-webpage",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319",
+  "engines": {
+    "node": ">=24.12.0",
+    "pnpm": ">=10.0.0"
+  },
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview",
+    "prepare": "svelte-kit sync || echo ''",
+    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/compat": "2.0.3",
+    "@eslint/js": "10.0.1",
+    "@sveltejs/adapter-vercel": "6.3.3",
+    "@sveltejs/kit": "2.55.0",
+    "@sveltejs/vite-plugin-svelte": "6.2.4",
+    "@tailwindcss/vite": "4.2.2",
+    "@types/node": "24.12.0",
+    "eslint": "10.0.3",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-plugin-perfectionist": "5.7.0",
+    "eslint-plugin-svelte": "3.16.0",
+    "globals": "17.4.0",
+    "prettier": "3.8.1",
+    "prettier-plugin-svelte": "3.5.1",
+    "prettier-plugin-tailwindcss": "0.7.2",
+    "svelte": "5.55.0",
+    "svelte-check": "4.4.5",
+    "tailwindcss": "4.2.2",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.57.2",
+    "vite": "7.3.1"
+  }
+}
