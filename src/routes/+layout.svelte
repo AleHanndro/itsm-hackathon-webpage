@@ -9,7 +9,7 @@
 </script>
 
 <svelte:head>
-  <link rel="icon" href={favicon} />
+  <link href={favicon} rel="icon" />
   <title>{SITE_TITLE}</title>
   <meta name="title" content={SITE_TITLE} />
   <meta name="description" content={SITE_DESCRIPTION} />

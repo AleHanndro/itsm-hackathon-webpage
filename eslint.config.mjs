@@ -44,5 +44,8 @@ export default defineConfig(
         svelteConfig,
       },
     },
+    rules: {
+      'svelte/sort-attributes': 'error',
+    },
   },
 )
