@@ -46,6 +46,12 @@ export default defineConfig(
       },
     },
     rules: {
+      // Svelte 5 snippets are functions that typically return `void`
+      // but it triggers this rule as a "confusing" use of a void expression.
+      '@typescript-eslint/no-confusing-void-expression': 'off',
+      // Svelte's compiler transformations for reactive state (runes like `$state` and `$props`)
+      // and two-way bindings (`$bind` and `bind:`) can cause false positives for "unsafe" assignments.
+      '@typescript-eslint/no-unsafe-assignment': 'off',
       'svelte/sort-attributes': 'error',
     },
   },
