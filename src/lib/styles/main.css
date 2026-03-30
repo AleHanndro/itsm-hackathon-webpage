@@ -49,6 +49,7 @@
   --destructive: oklch(60% 0.2 25);
   --destructive-foreground: oklch(100% 0 0);
   --border: oklch(34% 0.12 260 / 0.15);
+  --line: oklch(0% 0 0 / 0.05);
   --input: oklch(34% 0.12 260 / 0.15);
   --ring: oklch(68% 0.17 55);
   --radius: 0rem;
@@ -79,6 +80,7 @@
     --destructive: oklch(50% 0.2 25);
     --destructive-foreground: oklch(99% 0.01 260);
     --border: oklch(100% 0 0 / 0.15);
+    --line: oklch(100% 0 0 / 0.1);
     --input: oklch(100% 0 0 / 0.15);
     --ring: oklch(68% 0.17 55);
     --sidebar: oklch(25% 0.04 260);
@@ -112,6 +114,7 @@
   --color-ring: var(--ring);
   --color-input: var(--input);
   --color-border: var(--border);
+  --color-line: var(--line);
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
@@ -205,34 +208,25 @@
 }
 
 @utility line-t {
-  @apply relative before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] before:bg-border;
+  @apply relative before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] before:bg-line;
 }
 
 @utility line-b {
-  @apply relative after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] after:bg-border;
+  @apply relative after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] after:bg-line;
 }
 
 @utility line-y {
   @apply relative;
-  @apply before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] before:bg-border;
-  @apply after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] after:bg-border;
+  @apply before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] before:bg-line;
+  @apply after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] after:bg-line;
 }
 
 .bg-pattern {
-  background-attachment: fixed;
-  background-image:
-    repeating-linear-gradient(
-      45deg,
-      var(--pattern-fg) 0,
-      var(--pattern-fg) 1px,
-      transparent 1px,
-      transparent 20px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      var(--pattern-fg) 0,
-      var(--pattern-fg) 1px,
-      transparent 1px,
-      transparent 20px
-    );
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 7px,
+    var(--pattern-fg) 8px,
+    var(--pattern-fg) 9px
+  );
 }

@@ -8,8 +8,6 @@
 </script>
 
 <script lang="ts">
-  import type { ClassValue } from 'svelte/elements'
-
   import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import { buttonVariants } from '$lib/components/ui/button.svelte'
@@ -19,7 +17,7 @@
   const { navLinks }: { navLinks: NavLink[] } = $props()
 </script>
 
-{#snippet links(className: ClassValue)}
+{#snippet links(className: string)}
   {#each navLinks as { href, label } (href)}
     {@const isActive = page.url.pathname === href}
     <a
@@ -52,9 +50,9 @@
       >
         <MenuIcon />
       </Sheet.Trigger>
-      <Sheet.Content class="border-l border-border bg-card font-display font-medium" side="right">
+      <Sheet.Content class="border-l border-line bg-card font-display font-medium" side="right">
         <nav class="flex flex-col gap-6 pt-10">
-          {@render links('border-b border-border/50 px-10 pb-2 uppercase tracking-widest')}
+          {@render links('border-b border-black/10 px-10 pb-2 uppercase tracking-widest')}
         </nav>
       </Sheet.Content>
     </Sheet.Root>
