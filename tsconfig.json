@@ -5,6 +5,8 @@
     "allowJs": true,
     "checkJs": true,
     "esModuleInterop": true,
+    "types": ["node"],
+    "stableTypeOrdering": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,

@@ -1,5 +1,10 @@
 node_modules
 
+# when using pnpm/action-setup locally with act, by default pnpm will create a .pnpm-store directory
+# in the root of the project, which can cause issues with jobs like Lint and Format.
+# To avoid this, we can ignore the .pnpm-store directory.
+.pnpm-store
+
 # Output
 .output
 .vercel
