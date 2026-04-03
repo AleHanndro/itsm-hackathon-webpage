@@ -28,69 +28,74 @@
 
   html {
     font-family: var(--font-sans);
+    scroll-padding-top: calc(var(--spacing) * 32);
   }
 }
 
 :root {
-  --background: oklch(99% 0.01 260);
-  --foreground: oklch(34% 0.12 260);
+  --background: oklch(97% 0.01 255);
+  --foreground: oklch(20% 0.05 255);
   --card: oklch(100% 0 0);
-  --card-foreground: oklch(34% 0.12 260);
+  --card-foreground: oklch(20% 0.05 255);
   --popover: oklch(100% 0 0);
-  --popover-foreground: oklch(34% 0.12 260);
-  --primary: oklch(34% 0.12 260);
-  --primary-foreground: oklch(100% 0 0);
-  --secondary: oklch(99% 0.01 260);
-  --secondary-foreground: oklch(34% 0.12 260);
-  --muted: oklch(34% 0.12 260 / 0.05);
-  --muted-foreground: oklch(34% 0.12 260 / 0.6);
-  --accent: oklch(68% 0.17 55);
-  --accent-foreground: oklch(100% 0 0);
+  --popover-foreground: oklch(20% 0.05 255);
+  --primary: oklch(72% 0.15 80);
+  --primary-foreground: oklch(20% 0.05 255);
+  --secondary: oklch(95% 0.02 255);
+  --secondary-foreground: oklch(30% 0.06 255);
+  --muted: oklch(95% 0.02 255);
+  --muted-foreground: oklch(45% 0.05 255);
+  --accent: oklch(72% 0.15 80);
+  --accent-2: oklch(60% 0.15 320);
+  --accent-3: oklch(55% 0.12 240);
+  --accent-foreground: oklch(20% 0.05 255);
   --destructive: oklch(60% 0.2 25);
   --destructive-foreground: oklch(100% 0 0);
-  --border: oklch(34% 0.12 260 / 0.15);
+  --border: oklch(85% 0.03 255);
   --line: oklch(0% 0 0 / 0.05);
-  --input: oklch(34% 0.12 260 / 0.15);
-  --ring: oklch(68% 0.17 55);
+  --input: oklch(85% 0.03 255);
+  --ring: oklch(72% 0.15 80);
   --radius: 0rem;
-  --sidebar: oklch(100% 0 0);
-  --sidebar-foreground: oklch(34% 0.12 260);
-  --sidebar-primary: oklch(34% 0.12 260);
-  --sidebar-primary-foreground: oklch(100% 0 0);
-  --sidebar-accent: oklch(68% 0.17 55 / 0.1);
-  --sidebar-accent-foreground: oklch(68% 0.17 55);
-  --sidebar-border: oklch(34% 0.12 260 / 0.1);
-  --sidebar-ring: oklch(68% 0.17 55);
+  --sidebar: oklch(97% 0.01 255);
+  --sidebar-foreground: oklch(20% 0.05 255);
+  --sidebar-primary: oklch(72% 0.15 80);
+  --sidebar-primary-foreground: oklch(20% 0.05 255);
+  --sidebar-accent: oklch(95% 0.02 255);
+  --sidebar-accent-foreground: oklch(20% 0.05 255);
+  --sidebar-border: oklch(85% 0.03 255);
+  --sidebar-ring: oklch(72% 0.15 80);
 
   @media (prefers-color-scheme: dark) {
-    --background: oklch(20% 0.04 260);
-    --foreground: oklch(99% 0.01 260);
-    --card: oklch(25% 0.04 260);
-    --card-foreground: oklch(99% 0.01 260);
-    --popover: oklch(25% 0.04 260);
-    --popover-foreground: oklch(99% 0.01 260);
-    --primary: oklch(68% 0.17 55);
-    --primary-foreground: oklch(20% 0.04 260);
-    --secondary: oklch(34% 0.12 260);
-    --secondary-foreground: oklch(99% 0.01 260);
-    --muted: oklch(99% 0.01 260 / 0.1);
-    --muted-foreground: oklch(99% 0.01 260 / 0.6);
-    --accent: oklch(68% 0.17 55);
-    --accent-foreground: oklch(20% 0.04 260);
-    --destructive: oklch(50% 0.2 25);
-    --destructive-foreground: oklch(99% 0.01 260);
-    --border: oklch(100% 0 0 / 0.15);
+    --background: oklch(18% 0.03 255);
+    --foreground: oklch(97% 0.01 255);
+    --card: oklch(23% 0.04 255);
+    --card-foreground: oklch(97% 0.01 255);
+    --popover: oklch(23% 0.04 255);
+    --popover-foreground: oklch(97% 0.01 255);
+    --primary: oklch(78% 0.16 80);
+    --primary-foreground: oklch(18% 0.03 255);
+    --secondary: oklch(30% 0.06 255);
+    --secondary-foreground: oklch(97% 0.01 255);
+    --muted: oklch(28% 0.05 255);
+    --muted-foreground: oklch(75% 0.03 255);
+    --accent: oklch(78% 0.16 80);
+    --accent-2: oklch(75% 0.15 320);
+    --accent-3: oklch(75% 0.12 240);
+    --accent-foreground: oklch(18% 0.03 255);
+    --destructive: oklch(60% 0.2 25);
+    --destructive-foreground: oklch(97% 0.01 255);
+    --border: oklch(35% 0.06 255);
     --line: oklch(100% 0 0 / 0.1);
-    --input: oklch(100% 0 0 / 0.15);
-    --ring: oklch(68% 0.17 55);
-    --sidebar: oklch(25% 0.04 260);
-    --sidebar-foreground: oklch(99% 0.01 260);
-    --sidebar-primary: oklch(68% 0.17 55);
-    --sidebar-primary-foreground: oklch(20% 0.04 260);
-    --sidebar-accent: oklch(100% 0 0 / 0.1);
-    --sidebar-accent-foreground: oklch(99% 0.01 260);
-    --sidebar-border: oklch(100% 0 0 / 0.1);
-    --sidebar-ring: oklch(68% 0.17 55);
+    --input: oklch(35% 0.06 255);
+    --ring: oklch(78% 0.16 80);
+    --sidebar: oklch(18% 0.03 255);
+    --sidebar-foreground: oklch(97% 0.01 255);
+    --sidebar-primary: oklch(78% 0.16 80);
+    --sidebar-primary-foreground: oklch(18% 0.03 255);
+    --sidebar-accent: oklch(30% 0.06 255);
+    --sidebar-accent-foreground: oklch(97% 0.01 255);
+    --sidebar-border: oklch(35% 0.06 255);
+    --sidebar-ring: oklch(78% 0.16 80);
   }
 }
 
@@ -118,6 +123,8 @@
   --color-destructive: var(--destructive);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent: var(--accent);
+  --color-accent-2: var(--accent-2);
+  --color-accent-3: var(--accent-3);
   --color-muted-foreground: var(--muted-foreground);
   --color-muted: var(--muted);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -137,6 +144,14 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+
+  --animate-gradient: gradient 8s linear infinite;
+
+  @keyframes gradient {
+    to {
+      background-position: 300% 0;
+    }
+  }
 }
 
 @custom-variant data-open {
@@ -221,6 +236,22 @@
   @apply after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] after:bg-line;
 }
 
+@utility line-t/half {
+  @apply relative;
+  @apply before:absolute before:top-0 before:right-0 before:h-px before:w-screen before:bg-line;
+}
+
+@utility line-b/half {
+  @apply relative;
+  @apply after:absolute after:right-0 after:bottom-0 after:h-px after:w-screen after:bg-line;
+}
+
+@utility line-y/half {
+  @apply relative;
+  @apply before:absolute before:top-0 before:right-0 before:h-px before:w-screen before:bg-line;
+  @apply after:absolute after:right-0 after:bottom-0 after:h-px after:w-screen after:bg-line;
+}
+
 .bg-pattern {
   background-image: repeating-linear-gradient(
     45deg,
@@ -229,4 +260,18 @@
     var(--pattern-fg) 8px,
     var(--pattern-fg) 9px
   );
+}
+
+@plugin '@tailwindcss/typography';
+@utility prose {
+  --tw-prose-body: var(--color-muted-foreground);
+  --tw-prose-headings: var(--color-foreground);
+  --tw-prose-lead: var(--color-muted-foreground);
+  --tw-prose-links: var(--color-primary);
+  --tw-prose-bold: var(--color-foreground);
+  --tw-prose-counters: var(--color-accent);
+  --tw-prose-bullets: var(--color-accent);
+  --tw-prose-hr: var(--color-line);
+  --tw-prose-th-borders: var(--color-border);
+  --tw-prose-td-borders: var(--color-border);
 }
