@@ -11,36 +11,31 @@
 </script>
 
 {#snippet info({ children, className, title }: InfoProps)}
-  <GridContainer class={['border-line', className]}>
-    <section>
-      <h2
-        class="border-b border-line px-2 font-display text-[2.5rem]/10 font-medium tracking-tighter max-sm:px-4"
-      >
-        {title}
-      </h2>
-      <p
-        class="mt-6 border-t border-line px-2 text-balance text-muted-foreground max-sm:px-4 md:mt-10"
-      >
-        {@render children()}
-      </p>
-    </section>
-  </GridContainer>
+  <section class={['border-line', className]}>
+    <h2
+      class="border-b border-line px-2 font-display text-[2.5rem]/10 font-medium tracking-tighter text-balance max-sm:px-4"
+    >
+      {title}
+    </h2>
+    <p
+      class="mt-6 border-t border-line px-2 text-pretty text-muted-foreground max-sm:px-4 md:mt-10 [&>strong]:font-display [&>strong]:font-medium [&>strong]:text-accent"
+    >
+      {@render children()}
+    </p>
+  </section>
 {/snippet}
 
 {#snippet event()}
-  Este evento es impulsado por el departamento de <code
-    class="font-display font-medium text-accent"
-  >
-    Ingeniería en Sistemas Computacionales
-  </code>, sin embargo, cualquier estudiante inscrito en las ingenierías del Instituto Tecnológico
-  Superior de Motul puede formar un equipo y participar.
+  Este evento es impulsado por el departamento de
+  <strong>Ingeniería en Sistemas Computacionales</strong>, sin embargo, cualquier estudiante
+  inscrito en las ingenierías del Instituto Tecnológico Superior de Motul puede formar un equipo y
+  participar.
 {/snippet}
 
 {#snippet dynamic()}
   Los equipos tendrán exactamente un día para pasar de una idea abstracta a una idea viable y a un
-  modelo de negocio validado. Habrá <code class="font-display font-medium text-accent">
-    Coffee breaks
-  </code> y talleres relámpago previo al evento para asegurar que tu proyecto llegue a la meta.
+  modelo de negocio validado. Habrá <strong>Coffee breaks</strong> y talleres relámpago previo al evento
+  para asegurar que tu proyecto llegue a la meta.
 {/snippet}
 
 <div>
@@ -52,7 +47,7 @@
     </span>
   </GridContainer>
 
-  <div class="mt-4 grid grid-cols-1 gap-10 max-md:gap-5 md:grid-cols-2">
+  <GridContainer class="mt-4 grid grid-cols-1 gap-10 max-md:gap-5 md:grid-cols-2">
     {@render info({
       children: event,
       className: 'md:border-r',
@@ -61,8 +56,8 @@
 
     {@render info({
       children: dynamic,
-      className: 'md:border-l md:before:hidden md:after:hidden',
+      className: 'md:border-l md:before:hidden md:after:hidden max-md:border-t',
       title: 'Reto 24h.',
     })}
-  </div>
+  </GridContainer>
 </div>

@@ -25,7 +25,7 @@
 <div>
   <GridContainer>
     <span
-      class="origin-bottom-right px-2 font-mono text-sm font-bold tracking-widest text-accent uppercase select-none max-sm:px-4"
+      class="origin-bottom-right px-2 font-mono text-sm font-bold tracking-widest text-accent-2 uppercase select-none max-sm:px-4"
     >
       Etapas
     </span>
@@ -44,7 +44,7 @@
       <p
         class="max-w-(--breakpoint-md) px-2 text-base/7 text-pretty text-muted-foreground max-sm:px-4"
       >
-        El hackathon está diseñado para desafiarte en múltiples dimensiones. No solo se trata de
+        El hackatón está diseñado para desafiarte en múltiples dimensiones. No solo se trata de
         resolver un problema, sino de hacerlo de manera innovadora, sostenible y presentarlo de
         manera convincente.
       </p>
@@ -63,19 +63,19 @@
           {@const Icon = stage.icon}
           <li class="before:z-10 after:z-10 max-lg:nth-[2n+1]:line-y lg:nth-[3n+1]:line-y">
             <div
-              class="group relative h-full bg-card p-4 transition-colors hover:bg-accent/5 sm:p-8"
+              class="group relative h-full bg-card p-4 transition-colors hover:bg-accent-2/5 sm:p-8"
             >
               <div
                 class="pointer-events-none mb-4 flex items-center justify-between select-none"
                 aria-hidden="true"
               >
                 <div
-                  class="inline-grid size-12 place-content-center border border-line transition-colors group-hover:border-accent group-hover:text-accent"
+                  class="inline-grid size-12 place-content-center border border-line transition-colors group-hover:border-accent-2 group-hover:text-accent-2"
                 >
                   <Icon class="size-6" />
                 </div>
                 <div
-                  class="font-display text-3xl font-bold text-muted-foreground transition-colors group-hover:text-accent sm:text-5xl lg:text-7xl"
+                  class="font-display text-3xl font-bold text-muted-foreground transition-colors group-hover:text-accent-2 sm:text-5xl lg:text-7xl"
                 >
                   {stage.id}
                 </div>
