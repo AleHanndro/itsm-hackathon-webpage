@@ -15,4 +15,6 @@
   <meta name="description" content={SITE_DESCRIPTION} />
 </svelte:head>
 
-{@render children()}
+<div class="max-w-screen overflow-x-hidden">
+  {@render children()}
+</div>

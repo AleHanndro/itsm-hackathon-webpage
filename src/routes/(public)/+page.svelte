@@ -1,18 +1,13 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-
-  let time = $state('')
-
-  onMount(() => {
-    time = new Date().toLocaleTimeString()
-    const interval = setInterval(() => {
-      time = new Date().toLocaleTimeString()
-    }, 1000)
-    return () => {
-      clearInterval(interval)
-    }
-  })
+  import EventInformationSection from './_components/event-information.svelte'
+  import FaqSection from './_components/faq/faq.svelte'
+  import Footer from './_components/footer.svelte'
+  import Hero from './_components/hero.svelte'
+  import StagesSection from './_components/stages.svelte'
 </script>
 
-<h1 class="text-3xl font-bold underline">ITSM Hackathon 2026A</h1>
-<p class="text-lg text-gray-600">Hora actual: {time}</p>
+<Hero />
+<EventInformationSection />
+<StagesSection />
+<FaqSection />
+<Footer />

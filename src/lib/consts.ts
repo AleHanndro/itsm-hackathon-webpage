@@ -1,2 +1,2 @@
-export const SITE_TITLE = 'ITSM Hackathon'
-export const SITE_DESCRIPTION = 'ITSM Hackathon 2026'
+export const SITE_TITLE = 'ITSM Hackatón'
+export const SITE_DESCRIPTION = 'ITSM Hackatón 2026'
