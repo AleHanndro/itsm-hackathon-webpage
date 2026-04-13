@@ -10,6 +10,7 @@ node_modules
 .vercel
 .netlify
 .wrangler
+.content-collections
 /.svelte-kit
 /build
 

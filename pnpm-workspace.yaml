@@ -3,4 +3,9 @@ packages:
 
 peerDependencyRules:
   allowedVersions:
+    '@sveltejs/enhanced-img': ^0.10.0
     typescript: ^6.0.0
+    vite: ^8.0.0
+
+onlyBuiltDependencies:
+  - sharp
