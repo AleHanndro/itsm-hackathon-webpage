@@ -19,7 +19,7 @@
 
 {#snippet links(className: string)}
   {#each navLinks as { href, label } (href)}
-    {@const isActive = page.url.pathname === href}
+    {@const isActive = page.url.pathname === href || page.url.pathname.startsWith(href + '/')}
     <a
       class={[className, { 'text-accent': isActive }]}
       aria-current={isActive ? 'page' : undefined}
