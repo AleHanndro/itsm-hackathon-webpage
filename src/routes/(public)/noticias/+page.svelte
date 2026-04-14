@@ -1,5 +1,6 @@
 <script lang="ts">
   import GridContainer from '$lib/components/grid-container.svelte'
+  import NewspaperIcon from '@lucide/svelte/icons/newspaper'
 
   import type { PageProps } from './$types'
 
@@ -46,7 +47,15 @@
           {/each}
         </ul>
       {:else}
-        <p>No hay noticias disponibles en este momento.</p>
+        <div class="grid h-64 w-full place-items-center">
+          <div class="px-4 text-center sm:px-2">
+            <NewspaperIcon class="mx-auto size-12 text-muted-foreground" />
+            <h3 class="mt-2 font-display text-xl font-bold">Sin Publicaciones.</h3>
+            <p class="mt-4 text-pretty text-muted-foreground">
+              No hay noticias, avisos o publicaciones disponibles en este momento.
+            </p>
+          </div>
+        </div>
       {/if}
     </GridContainer>
   </section>
