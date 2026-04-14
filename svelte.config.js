@@ -1,5 +1,10 @@
+import remarkEnhancedImage from '@m4r1vs/mdsvex-enhanced-images'
 import adapter from '@sveltejs/adapter-vercel'
+import { mdsvex } from 'mdsvex'
 import { relative, sep } from 'node:path'
+import rehypeAutolinkHeadings from 'rehype-autolink-headings'
+import rehypeSlug from 'rehype-slug'
+import remarkSectionize from 'remark-sectionize'
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -13,16 +18,64 @@ const config = {
       return isExternalLibrary ? undefined : true
     },
   },
+  extensions: ['.svelte', '.md', '.svx'],
   kit: {
     adapter: adapter(),
+    alias: {
+      $content: 'src/content',
+      '$content-collections': './.content-collections/generated',
+    },
+    prerender: {
+      handleUnseenRoutes: 'warn',
+    },
     typescript: {
       config: (cfg) => {
         // Include root directory ts/js files
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Generated SvelteKit tsconfig.json isn't typed
-        return { ...cfg, include: [...cfg.include, '../*.ts', '../*.js', '../*.mjs'] }
+        return {
+          ...cfg,
+          include: [
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Generated SvelteKit tsconfig.json isn't typed
+            ...cfg.include,
+            '../.content-collections/generated/index.d.ts',
+            '../*.ts',
+            '../*.js',
+            '../*.mjs',
+          ],
+        }
       },
     },
   },
+  preprocess: [
+    mdsvex({
+      extensions: ['.md', '.svx'],
+      rehypePlugins: [
+        // @ts-expect-error Types mismatch between rehype plugins, but they work fine
+        rehypeSlug,
+        // @ts-expect-error Types mismatch between rehype plugins, but they work fine
+        [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+      ],
+      remarkPlugins: [
+        // @ts-expect-error Types mismatch between remark plugins, but they work fine
+        remarkSectionize,
+        [
+          // @ts-expect-error Types mismatch between remark plugins, but they work fine
+          remarkEnhancedImage,
+          {
+            // @ts-expect-error Due to types mismatch, the plugin doesn't recognize the `attributes` property, but it works fine
+            attributes: {
+              decoding: 'async',
+              loading: 'lazy',
+              sizes: '(max-width:800px) 100vw, 1280px',
+            },
+            imagetoolsDirectives: {
+              format: 'avif',
+              w: 'w=400;800;1280',
+            },
+          },
+        ],
+      ],
+    }),
+  ],
 }
 
 export default config

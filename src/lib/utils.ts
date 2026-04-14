@@ -1,6 +1,16 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
+export const formatDate = (date: Date) => {
+  const dateTime = new Intl.DateTimeFormat('es-MX', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
+
+  return dateTime.format(date)
+}
+
 export type WithElementRef<T, U extends HTMLElement = HTMLElement> = T & { ref?: null | U }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

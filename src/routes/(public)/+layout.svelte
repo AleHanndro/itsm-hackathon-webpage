@@ -5,7 +5,10 @@
 
   const { children }: { children: Snippet } = $props()
 
-  const navLinks: NavLink[] = [{ href: '/', label: 'Inicio' }]
+  const navLinks: NavLink[] = [
+    { href: '/', label: 'Inicio' },
+    { href: '/noticias', label: 'Noticias' },
+  ]
 </script>
 
 <div class="fixed inset-x-0 top-0 z-10 border-b border-line bg-card">
