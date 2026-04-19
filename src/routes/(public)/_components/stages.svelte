@@ -42,11 +42,18 @@
 
     <GridContainer class="mt-6 md:mt-10">
       <p
-        class="max-w-(--breakpoint-md) px-2 text-base/7 text-pretty text-muted-foreground max-sm:px-4"
+        class="mb-[1.25em] max-w-(--breakpoint-md) px-2 text-base/7 text-pretty text-muted-foreground max-sm:px-4"
       >
         El hackatón está diseñado para desafiarte en múltiples dimensiones. No solo se trata de
         resolver un problema, sino de hacerlo de manera innovadora, sostenible y presentarlo de
         manera convincente.
+      </p>
+      <p
+        class="max-w-(--breakpoint-md) px-2 text-base/7 text-pretty text-muted-foreground max-sm:px-4"
+      >
+        Por ello hemos elegido un programa de innovación utilizado por empresas en todo el mundo y
+        que se divide en seis etapas. Cada una de ellas diseñada para asegurar el éxito de tu
+        propuesta.
       </p>
     </GridContainer>
 

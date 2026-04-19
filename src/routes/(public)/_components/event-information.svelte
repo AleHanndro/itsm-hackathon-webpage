@@ -18,7 +18,7 @@
       {title}
     </h2>
     <p
-      class="mt-6 border-t border-line px-2 text-pretty text-muted-foreground max-sm:px-4 md:mt-10 [&>strong]:font-display [&>strong]:font-medium [&>strong]:text-accent"
+      class="mt-6 border-t border-line p-2 text-pretty text-muted-foreground max-sm:p-4 md:mt-10 [&>strong]:font-display [&>strong]:font-medium [&>strong]:text-accent"
     >
       {@render children()}
     </p>
@@ -26,16 +26,21 @@
 {/snippet}
 
 {#snippet event()}
-  Este evento es impulsado por el departamento de
-  <strong>Ingeniería en Sistemas Computacionales</strong>, sin embargo, cualquier estudiante
-  inscrito en las ingenierías del Instituto Tecnológico Superior de Motul puede formar un equipo y
-  participar.
+  Este evento es impulsado por la coordinación de innovación de la
+  <strong>Ingeniería en Sistemas Computacionales</strong> y cualquier estudiante inscrito en el
+  Instituto Tecnológico Superior de Motul puede formar un equipo y participar libremente.
+  <br /><br />
+  Los equipos deben ser interdisciplinarios, al menos dos ingenierías y promover la participación igualitaria
+  sin distinción de género entre los miembros del equipo.
 {/snippet}
 
 {#snippet dynamic()}
   Los equipos tendrán exactamente un día para pasar de una idea abstracta a una idea viable y a un
-  modelo de negocio validado. Habrá <strong>Coffee breaks</strong> y talleres relámpago previo al evento
-  para asegurar que tu proyecto llegue a la meta.
+  modelo de negocio validado. Habrá <strong>Coffee breaks</strong> y talleres relámpago previo al
+  evento para asegurar que tu proyecto llegue a la meta.
+  <br /><br />
+  En la ISC sabemos que 24 horas puede ser muy pesado anímicamente, por eso tendremos actividades de socialización
+  y recreación para que la convivencia sea también memorable.
 {/snippet}
 
 <div>
