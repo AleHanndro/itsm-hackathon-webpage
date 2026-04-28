@@ -8,7 +8,8 @@ if (!DATABASE_URL) {
 
 const client = postgres(DATABASE_URL, {
   prepare: false,
-  ssl: import.meta.env.PROD,
+  // FIX: self-signed certificate error in production
+  // ssl: import.meta.env.PROD,
 })
 
 export const db = drizzle(client)
