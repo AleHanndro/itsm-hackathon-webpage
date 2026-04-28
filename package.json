@@ -22,8 +22,8 @@
     "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "@content-collections/core": "0.14.3",
-    "@content-collections/vite": "0.2.9",
+    "@content-collections/core": "0.15.0",
+    "@content-collections/vite": "0.3.0",
     "@eslint/compat": "2.0.4",
     "@eslint/js": "10.0.1",
     "@fontsource-variable/dm-sans": "5.2.8",
