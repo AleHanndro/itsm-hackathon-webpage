@@ -27,7 +27,7 @@ const posts = defineCollection({
     title: z.string(),
   }),
   transform: (data) => {
-    const slug = data.slug?.trim() ?? data.title.toLowerCase().trim().replace(/\s+/g, '-')
+    const slug = data.slug?.trim() ?? data._meta.path.toLowerCase().trim().replace(/\s+/g, '-')
     const resolveCover = (cover: z.input<typeof coverSchema>, directory: string) => {
       const isExternal =
         cover.isExternal ??

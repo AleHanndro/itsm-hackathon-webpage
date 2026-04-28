@@ -2,7 +2,6 @@
 category: anuncio
 date: 2026-04-28 11:39:16-06:00
 title: Inicio de prerregistro para el Hackatón 2026A
-slug: pre-registro-hackaton-2026a
 summary: Anuncio de apertura de prerregistro para el Hackatón 2026A, con detalles sobre fechas, costos y formulario de inscripción.
 ---
 
