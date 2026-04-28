@@ -29,6 +29,7 @@
   html {
     font-family: var(--font-sans);
     scroll-padding-top: calc(var(--spacing) * 32);
+    scrollbar-gutter: stable;
   }
 }
 
