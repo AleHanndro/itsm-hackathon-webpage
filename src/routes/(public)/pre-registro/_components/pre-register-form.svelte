@@ -191,7 +191,7 @@
         <CheckboxField
           name="acceptPreregistration"
           {form}
-          label="Acepto prerregistrarme al hackatón"
+          label="Acepto prerregistrarme al hackatón y que hasta a hacer el pago de $350.00 MXN confirmo mi participación para el evento"
         />
         <CheckboxField
           name="acceptTerms"
