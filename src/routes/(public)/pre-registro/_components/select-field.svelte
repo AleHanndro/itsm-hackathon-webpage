@@ -1,6 +1,6 @@
 <script generics="T extends Record<string, unknown>, Path extends FormPathLeaves<T>" lang="ts">
   import type { Snippet } from 'svelte'
-  import type { FormPathLeaves, SuperForm } from 'sveltekit-superforms'
+  import type { FormPath, FormPathLeaves, SuperForm } from 'sveltekit-superforms'
 
   import * as Form from '$lib/components/ui/form/index'
   import * as NativeSelect from '$lib/components/ui/native-select/index'
@@ -25,7 +25,8 @@
   const { form: formData } = form
 </script>
 
-<Form.Field {name} {form}>
+<!-- eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -->
+<Form.Field name={name as unknown as FormPath<T>} {form}>
   <Form.Control>
     {#snippet children({ props })}
       <Form.Label>{label}</Form.Label>
