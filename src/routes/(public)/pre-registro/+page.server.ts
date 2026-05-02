@@ -1,7 +1,7 @@
 import { preRegistrations } from '$lib/schema/pre-registrations'
 import { db } from '$lib/server/db/database'
 import { dbTry } from '$lib/server/db/errors'
-import { fail } from '@sveltejs/kit'
+import { error, fail } from '@sveltejs/kit'
 import { message, setError, superValidate } from 'sveltekit-superforms'
 import { zod4 } from 'sveltekit-superforms/adapters'
 
@@ -11,10 +11,8 @@ import { emailRegex, newPreRegistrationSchema } from './schema'
 
 export const prerender = false
 
-export const load = (async () => {
-  return {
-    form: await superValidate(zod4(newPreRegistrationSchema)),
-  }
+export const load = (() => {
+  return error(404, 'La página de prerregistro ya no está disponible.')
 }) satisfies PageServerLoad
 
 export const actions = {
