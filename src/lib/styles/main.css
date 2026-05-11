@@ -29,7 +29,6 @@
   html {
     font-family: var(--font-sans);
     scroll-padding-top: calc(var(--spacing) * 32);
-    scrollbar-gutter: stable;
   }
 }
 
@@ -57,7 +56,7 @@
   --input: oklch(85% 0.03 255);
   --ring: oklch(72% 0.15 80);
   --radius: 0rem;
-  --sidebar: oklch(97% 0.01 255);
+  --sidebar: oklch(95% 0.02 255);
   --sidebar-foreground: oklch(20% 0.05 255);
   --sidebar-primary: oklch(72% 0.15 80);
   --sidebar-primary-foreground: oklch(20% 0.05 255);
@@ -89,7 +88,7 @@
     --line: oklch(100% 0 0 / 0.1);
     --input: oklch(35% 0.06 255);
     --ring: oklch(78% 0.16 80);
-    --sidebar: oklch(18% 0.03 255);
+    --sidebar: oklch(23% 0.04 255);
     --sidebar-foreground: oklch(97% 0.01 255);
     --sidebar-primary: oklch(78% 0.16 80);
     --sidebar-primary-foreground: oklch(18% 0.03 255);
@@ -224,17 +223,17 @@
 }
 
 @utility line-t {
-  @apply relative before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] before:bg-line;
+  @apply relative before:absolute before:top-0 before:left-[-100vw] before:h-px before:w-[200vw] before:bg-line;
 }
 
 @utility line-b {
-  @apply relative after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] after:bg-line;
+  @apply relative after:absolute after:bottom-0 after:left-[-100vw] after:h-px after:w-[200vw] after:bg-line;
 }
 
 @utility line-y {
   @apply relative;
-  @apply before:absolute before:top-0 before:-left-[100vw] before:h-px before:w-[200vw] before:bg-line;
-  @apply after:absolute after:bottom-0 after:-left-[100vw] after:h-px after:w-[200vw] after:bg-line;
+  @apply before:absolute before:top-0 before:left-[-100vw] before:h-px before:w-[200vw] before:bg-line;
+  @apply after:absolute after:bottom-0 after:left-[-100vw] after:h-px after:w-[200vw] after:bg-line;
 }
 
 @utility line-t/half {
