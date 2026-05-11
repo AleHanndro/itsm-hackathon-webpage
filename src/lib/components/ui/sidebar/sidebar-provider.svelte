@@ -1,0 +1,58 @@
+<script lang="ts">
+  import type { HTMLAttributes } from 'svelte/elements'
+
+  import * as Tooltip from '$lib/components/ui/tooltip/index'
+  import { cn, type WithElementRef } from '$lib/utils'
+
+  import {
+    SIDEBAR_COOKIE_MAX_AGE,
+    SIDEBAR_COOKIE_NAME,
+    SIDEBAR_WIDTH,
+    SIDEBAR_WIDTH_ICON,
+  } from './constants'
+  import { setSidebar } from './context.svelte'
+
+  let {
+    children,
+    class: className,
+    onOpenChange = () => {
+      /* empty */
+    },
+    open = $bindable(true),
+    ref = $bindable(null),
+    style,
+    ...restProps
+  }: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
+    onOpenChange?: (open: boolean) => void
+    open?: boolean
+  } = $props()
+
+  const sidebar = setSidebar({
+    open: () => open,
+    setOpen: (value: boolean) => {
+      open = value
+      onOpenChange(value)
+
+      // This sets the cookie to keep the sidebar state.
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      document.cookie = `${SIDEBAR_COOKIE_NAME}=${open}; path=/; max-age=${SIDEBAR_COOKIE_MAX_AGE}`
+    },
+  })
+</script>
+
+<svelte:window onkeydown={sidebar.handleShortcutKeydown} />
+
+<Tooltip.Provider delayDuration={0}>
+  <div
+    bind:this={ref}
+    style="--sidebar-width: {SIDEBAR_WIDTH}; --sidebar-width-icon: {SIDEBAR_WIDTH_ICON}; {style}"
+    class={cn(
+      'group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar',
+      className,
+    )}
+    data-slot="sidebar-wrapper"
+    {...restProps}
+  >
+    {@render children?.()}
+  </div>
+</Tooltip.Provider>

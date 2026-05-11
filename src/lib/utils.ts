@@ -1,12 +1,24 @@
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-export const formatDate = (date: Date) => {
-  const dateTime = new Intl.DateTimeFormat('es-MX', {
-    day: 'numeric',
+export const formatDate = (
+  date: Date,
+  { withTime = false }: Partial<{ withTime: boolean }> = {},
+) => {
+  const options: Intl.DateTimeFormatOptions = {
+    day: '2-digit',
     month: 'long',
     year: 'numeric',
-  })
+  }
+
+  if (withTime) {
+    Object.assign<typeof options, typeof options>(options, {
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  }
+
+  const dateTime = new Intl.DateTimeFormat(['es-MX', 'en-US'], options)
 
   return dateTime.format(date)
 }
