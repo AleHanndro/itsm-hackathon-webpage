@@ -8,10 +8,31 @@ import { admin as adminPlugin } from 'better-auth/plugins'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 
 import { db } from './db/database'
+import { syncGoogleImageToUser } from './utils'
 
 export const auth = betterAuth({
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ['google'],
+    },
+  },
   baseURL: env.ORIGIN,
   database: drizzleAdapter(db, { provider: 'pg', schema, usePlural: true }),
+  databaseHooks: {
+    account: {
+      create: {
+        after: async (account) => {
+          await syncGoogleImageToUser({ account, db, userTable: schema.users })
+        },
+      },
+      update: {
+        after: async (account) => {
+          await syncGoogleImageToUser({ account, db, userTable: schema.users })
+        },
+      },
+    },
+  },
   emailAndPassword: { disableSignUp: true, enabled: true },
   plugins: [sveltekitCookies(getRequestEvent), adminPlugin({ ac, roles: allRoles })],
   secret: env.BETTER_AUTH_SECRET,
