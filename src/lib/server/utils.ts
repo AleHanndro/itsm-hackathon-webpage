@@ -1,3 +1,4 @@
+import type { Pathname } from '$app/types'
 import type { UserWithRole } from 'better-auth/plugins/admin'
 
 type Role = null | UserWithRole['role']
@@ -14,4 +15,8 @@ export const hasRole = (userRole: Role, role: string): boolean =>
 export const hasAnyRole = (userRole: Role, roles: string[]): boolean => {
   const userRoles = parseRoles(userRole)
   return roles.some((role) => userRoles.includes(role))
+}
+
+export const getDashboardRoute = (userRole: Role): Pathname => {
+  return hasAnyRole(userRole, ['admin', 'staff']) ? '/dashboard/evento' : '/dashboard'
 }
