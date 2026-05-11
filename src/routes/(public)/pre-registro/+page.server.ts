@@ -49,6 +49,6 @@ export const actions = {
       }
     }
 
-    return message(form, 'Nos pondremos en contacto contigo pronto.')
+    return message(form, { text: 'Nos pondremos en contacto contigo pronto.', type: 'success' })
   },
 } satisfies Actions

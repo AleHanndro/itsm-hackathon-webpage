@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { page } from '$app/state'
   import * as Alert from '$lib/components/ui/alert/index'
   import Button from '$lib/components/ui/button.svelte'
   import * as Form from '$lib/components/ui/form/index'
@@ -72,16 +71,15 @@
     { label: 'Ingeniería Industrial', value: 'II' },
   ]
 
-  const isSuccess = $derived(page.status === 200 && $message)
   let formContainer: HTMLDivElement | undefined = undefined
 </script>
 
 <div bind:this={formContainer}>
-  {#if isSuccess}
+  {#if $message?.type === 'success'}
     <div class="flex flex-col items-center justify-center space-y-4 py-8 text-center">
       <CircleCheckIcon class="size-16 text-green-500" />
       <h3 class="font-display text-2xl font-bold text-foreground">¡Registro exitoso!</h3>
-      <p class="text-muted-foreground">{$message}</p>
+      <p class="text-muted-foreground">{$message.text}</p>
 
       <Button class="mt-4 w-full" onclick={() => ($message = undefined)} variant="outline">
         Registrar a otra persona
@@ -89,11 +87,11 @@
     </div>
   {:else}
     <form class="space-y-6" method="POST" use:enhance>
-      {#if page.status >= 400 && $message}
+      {#if $message?.type === 'error'}
         <Alert.Root variant="destructive">
           <CircleAlertIcon class="size-4" />
           <Alert.Title>Error</Alert.Title>
-          <Alert.Description>{$message}</Alert.Description>
+          <Alert.Description>{$message.text}</Alert.Description>
         </Alert.Root>
       {/if}
 
