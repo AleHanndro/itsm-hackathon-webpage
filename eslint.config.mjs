@@ -16,8 +16,8 @@ export default defineConfig(
   includeIgnoreFile(gitignorePath),
   globalIgnores(['.husky/']),
   js.configs.recommended,
-  ts.configs.strictTypeChecked,
-  ts.configs.stylisticTypeChecked,
+  ts.configs.strict,
+  ts.configs.stylistic,
   svelte.configs.recommended,
   perfectionist.configs['recommended-natural'],
   prettier,
@@ -25,10 +25,6 @@ export default defineConfig(
   {
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
-      parserOptions: {
-        projectService: true,
-        tsconfigRootDir: import.meta.dirname,
-      },
     },
     rules: {
       // typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.

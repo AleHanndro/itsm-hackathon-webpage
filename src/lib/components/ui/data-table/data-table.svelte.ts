@@ -99,7 +99,7 @@ export function mergeObjects<Sources extends readonly MaybeThunk<any>[]>(
   const findSourceWithKey = (key: PropertyKey) => {
     for (let i = sources.length - 1; i >= 0; i--) {
       const obj = resolve(sources[i])
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+
       if (obj && key in obj) return obj
     }
     return undefined
@@ -109,7 +109,6 @@ export function mergeObjects<Sources extends readonly MaybeThunk<any>[]>(
     get(_, key) {
       const src = findSourceWithKey(key)
 
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-member-access
       return src?.[key as never]
     },
 
@@ -120,7 +119,6 @@ export function mergeObjects<Sources extends readonly MaybeThunk<any>[]>(
         configurable: true,
         enumerable: true,
 
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
         value: src[key],
         writable: true,
       }
@@ -136,7 +134,6 @@ export function mergeObjects<Sources extends readonly MaybeThunk<any>[]>(
       for (const s of sources) {
         const obj = resolve(s)
         if (obj) {
-          // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
           for (const k of Reflect.ownKeys(obj)) {
             all.add(k)
           }

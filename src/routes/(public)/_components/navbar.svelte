@@ -44,7 +44,6 @@
   <div class="md:hidden">
     <Sheet.Root>
       <Sheet.Trigger
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
         class={buttonVariants({ size: 'icon', variant: 'outline' })}
         aria-label="Abrir Menú"
       >

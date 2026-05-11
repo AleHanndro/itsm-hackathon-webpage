@@ -34,9 +34,9 @@ const config = {
         return {
           ...cfg,
           include: [
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- Generated SvelteKit tsconfig.json isn't typed
             ...cfg.include,
             '../.content-collections/generated/index.d.ts',
+            '../scripts/*.ts',
             '../*.ts',
             '../*.js',
             '../*.mjs',
