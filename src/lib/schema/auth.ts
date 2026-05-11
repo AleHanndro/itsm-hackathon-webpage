@@ -5,11 +5,15 @@ import * as t from 'drizzle-orm/pg-core'
 import { timestampConfig, timestamps } from './columns.helpers'
 
 export const users = table('users', {
+  banExpires: t.timestamp('ban_expires', timestampConfig),
+  banned: t.boolean('banned'),
+  banReason: t.text('ban_reason'),
   email: t.text('email').notNull().unique(),
   emailVerified: t.boolean('email_verified').default(false).notNull(),
   id: t.text('id').primaryKey(),
   image: t.text('image'),
   name: t.text('name').notNull(),
+  role: t.text('role'),
   ...timestamps,
 })
 
@@ -18,6 +22,7 @@ export const sessions = table(
   {
     expiresAt: t.timestamp('expires_at', timestampConfig).notNull(),
     id: t.text('id').primaryKey(),
+    impersonatedBy: t.text('impersonated_by'),
     ipAddress: t.text('ip_address'),
     token: t.text('token').notNull().unique(),
     userAgent: t.text('user_agent'),
