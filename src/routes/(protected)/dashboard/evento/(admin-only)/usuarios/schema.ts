@@ -1,4 +1,7 @@
+import { allRoles, type Roles } from '$lib/permissions'
 import { z } from '$lib/z'
+
+const roleEnumValues = Object.keys(allRoles) as [Roles, ...Roles[]]
 
 export const createUserSchema = z.object({
   email: z.email('Correo electrónico inválido.'),
@@ -10,7 +13,7 @@ export const createUserSchema = z.object({
 })
 
 export const setRoleSchema = z.object({
-  role: z.enum(['user', 'staff', 'admin', 'evaluator'], {
+  role: z.enum(roleEnumValues, {
     error: 'Rol inválido.',
   }),
   userId: z.string().min(1),

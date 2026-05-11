@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { Roles } from '$lib/permissions'
   import type { UserWithRole } from 'better-auth/plugins/admin'
   import type { Infer, SuperForm } from 'sveltekit-superforms'
 
@@ -29,7 +30,7 @@
   $effect(() => {
     if (user) {
       $formData.userId = user.id
-      $formData.role = user.role as 'admin' | 'evaluator' | 'staff' | 'user'
+      $formData.role = user.role as Roles
     }
   })
 </script>

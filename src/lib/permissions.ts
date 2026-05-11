@@ -27,6 +27,10 @@ export const user = ac.newRole({
   ...userAc.statements,
 })
 
+export const allRoles = { admin, evaluator, staff, user }
+
+export type Roles = keyof typeof allRoles
+
 // --- Roles ---
 // admin: all permissions
 // staff: only see and approve pre-register records (not delete them), see and modify (fix typos, etc) user info (not delete them), future: create and manage teams records, assign users to a team and manage them.

@@ -1,6 +1,6 @@
 import { getRequestEvent } from '$app/server'
 import { env } from '$env/dynamic/private'
-import { ac, admin, evaluator, staff, user } from '$lib/permissions'
+import { ac, allRoles } from '$lib/permissions'
 import * as schema from '$lib/schema/auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { betterAuth } from 'better-auth/minimal'
@@ -13,10 +13,7 @@ export const auth = betterAuth({
   baseURL: env.ORIGIN,
   database: drizzleAdapter(db, { provider: 'pg', schema, usePlural: true }),
   emailAndPassword: { disableSignUp: true, enabled: true },
-  plugins: [
-    sveltekitCookies(getRequestEvent),
-    adminPlugin({ ac, roles: { admin, evaluator, staff, user } }),
-  ],
+  plugins: [sveltekitCookies(getRequestEvent), adminPlugin({ ac, roles: allRoles })],
   secret: env.BETTER_AUTH_SECRET,
   session: {
     cookieCache: {
