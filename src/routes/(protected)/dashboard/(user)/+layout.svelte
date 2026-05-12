@@ -14,6 +14,6 @@
   <title>Dashboard - Participante</title>
 </svelte:head>
 
-<DashboardWrapper items={groups} user={data.user}>
+<DashboardWrapper items={data.isAuthorized ? groups : undefined} user={data.user}>
   {@render children()}
 </DashboardWrapper>
