@@ -32,6 +32,24 @@ export const auth = betterAuth({
         },
       },
     },
+    user: {
+      create: {
+        before: async (user) => {
+          if (user.role !== 'user') return
+
+          const prereg = await db.query.preRegistrations.findFirst({
+            columns: { name: true, status: true },
+            where: (t, { eq }) => eq(t.email, user.email),
+          })
+
+          if (!prereg) return false
+
+          return {
+            data: { ...user, name: prereg.name },
+          }
+        },
+      },
+    },
   },
   emailAndPassword: { disableSignUp: true, enabled: true },
   plugins: [sveltekitCookies(getRequestEvent), adminPlugin({ ac, roles: allRoles })],
