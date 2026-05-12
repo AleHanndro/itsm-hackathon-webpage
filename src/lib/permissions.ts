@@ -14,20 +14,23 @@ export const admin = ac.newRole({
 })
 
 export const staff = ac.newRole({
-  preRegistration: ['approve', 'deny'],
-  ...adminAc.statements,
+  ...userAc.statements,
 })
 
 export const evaluator = ac.newRole({
+  ...userAc.statements,
+})
+
+export const organizer = ac.newRole({
   preRegistration: ['approve', 'deny'],
-  ...adminAc.statements,
+  ...userAc.statements,
 })
 
 export const user = ac.newRole({
   ...userAc.statements,
 })
 
-export const allRoles = { admin, evaluator, staff, user }
+export const allRoles = { admin, evaluator, organizer, staff, user }
 
 export type Roles = keyof typeof allRoles
 
