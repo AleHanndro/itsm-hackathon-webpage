@@ -1,7 +1,8 @@
 import type { Pathname } from '$app/types'
-import type { Roles } from '$lib/permissions'
 import type { UserWithRole } from 'better-auth/plugins/admin'
 
+import { EVENT_START_DATE } from '$lib/consts'
+import { type Roles } from '$lib/permissions'
 import { users } from '$lib/schema/auth'
 import { eq } from 'drizzle-orm'
 import { jwtDecode } from 'jwt-decode'
@@ -51,4 +52,23 @@ export const syncGoogleImageToUser = async ({
   if (!picture) return
 
   await db.update(userTable).set({ image: picture }).where(eq(userTable.id, account.userId))
+}
+
+export const isUserAuthorized = async (email?: string) => {
+  const user = email
+    ? await database.query.preRegistrations.findFirst({
+        columns: { status: true },
+        where: (t, { eq }) => eq(t.email, email),
+      })
+    : null
+
+  const now = new Date()
+  const isApproved = user?.status === 'verificado'
+  const hasEventStarted = now >= EVENT_START_DATE
+
+  return {
+    approved: isApproved,
+    authorized: isApproved && hasEventStarted,
+    eventStarted: hasEventStarted,
+  }
 }
