@@ -26,7 +26,7 @@
   import NavUser from './nav-user.svelte'
 
   interface SidebarProps {
-    items: SidebarGroups
+    items?: SidebarGroups
     user: ComponentProps<typeof NavUser>['user']
   }
 

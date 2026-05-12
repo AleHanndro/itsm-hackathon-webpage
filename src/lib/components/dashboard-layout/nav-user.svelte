@@ -7,12 +7,25 @@
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down'
   import LogOutIcon from '@lucide/svelte/icons/log-out'
 
+  import * as Avatar from '../avatar/index'
   import Button from '../ui/button.svelte'
 
   const { user }: { user: User } = $props()
 
   const sidebar = useSidebar()
 </script>
+
+{#snippet avatar()}
+  <Avatar.Root class="size-8 rounded-full">
+    <Avatar.Image
+      alt={user.name}
+      fetchpriority="high"
+      referrerpolicy="no-referrer"
+      src={user.image}
+    />
+    <Avatar.Fallback class="rounded-full">{user.name.charAt(0)}</Avatar.Fallback>
+  </Avatar.Root>
+{/snippet}
 
 {#snippet userInfo()}
   <div class="grid flex-1 text-start text-sm leading-tight">
@@ -27,6 +40,7 @@
       <DropdownMenu.Trigger>
         {#snippet child({ props })}
           <Sidebar.MenuButton size="lg" {...props}>
+            {@render avatar()}
             {@render userInfo()}
             <ChevronsUpDownIcon class="ms-auto size-4" />
           </Sidebar.MenuButton>
@@ -41,6 +55,7 @@
       >
         <DropdownMenu.Label class="p-0 font-normal">
           <div class="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
+            {@render avatar()}
             {@render userInfo()}
           </div>
         </DropdownMenu.Label>

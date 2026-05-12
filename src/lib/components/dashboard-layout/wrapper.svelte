@@ -10,7 +10,7 @@
     user,
   }: {
     children: Snippet
-    items: ComponentProps<typeof DashboardSidebar>['items']
+    items?: ComponentProps<typeof DashboardSidebar>['items']
     user: ComponentProps<typeof DashboardSidebar>['user']
   } = $props()
 </script>
