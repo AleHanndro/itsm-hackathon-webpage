@@ -10,7 +10,10 @@
   const { children, data }: { children: Snippet; data: LayoutData } = $props()
 
   // svelte-ignore state_referenced_locally
-  const items = getSidebarGroups({ isAdmin: data.isAdmin })
+  const items = getSidebarGroups({
+    isAdmin: data.isAdmin,
+    isOrganizer: data.user.role === 'organizer',
+  })
 </script>
 
 <svelte:head>

@@ -80,6 +80,7 @@
               <NativeSelect.Option value="staff">Staff</NativeSelect.Option>
               <NativeSelect.Option value="admin">Administrador</NativeSelect.Option>
               <NativeSelect.Option value="evaluator">Evaluador</NativeSelect.Option>
+              <NativeSelect.Option value="organizer">Organizador</NativeSelect.Option>
             </NativeSelect.Root>
           {/snippet}
         </Form.Control>

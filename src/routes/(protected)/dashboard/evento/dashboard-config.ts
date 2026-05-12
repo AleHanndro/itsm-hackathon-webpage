@@ -1,4 +1,4 @@
-import type { SidebarGroups } from '$lib/components/dashboard-sidebar.svelte'
+import type { SidebarGroups } from '$lib/components/dashboard-layout/sidebar.svelte'
 
 import BookUserIcon from '@lucide/svelte/icons/book-user'
 import HouseIcon from '@lucide/svelte/icons/home'
@@ -17,15 +17,10 @@ const adminSidebarGroups: SidebarGroups = [
   },
 ]
 
-export const config: SidebarGroups = [
+const organizerSidebarGroups: SidebarGroups = [
   {
-    group: 'General',
+    group: 'Organización',
     items: [
-      {
-        icon: HouseIcon,
-        title: 'Inicio',
-        url: '/dashboard/evento',
-      },
       {
         icon: BookUserIcon,
         title: 'Prerregistros',
@@ -35,8 +30,22 @@ export const config: SidebarGroups = [
   },
 ]
 
-export const getSidebarGroups = ({ isAdmin = false } = {}) => {
-  if (isAdmin) return [...adminSidebarGroups, ...config]
+export const config: SidebarGroups = [
+  {
+    group: 'General',
+    items: [
+      {
+        icon: HouseIcon,
+        title: 'Inicio',
+        url: '/dashboard/evento',
+      },
+    ],
+  },
+]
+
+export const getSidebarGroups = ({ isAdmin = false, isOrganizer = false } = {}) => {
+  if (isAdmin) return [...config, ...adminSidebarGroups, ...organizerSidebarGroups]
+  if (isOrganizer) return [...config, ...organizerSidebarGroups]
 
   return config
 }
