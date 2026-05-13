@@ -39,7 +39,7 @@ export const load = (async ({ url }) => {
 
 export const actions = {
   approve: async ({ locals, request }) => {
-    if (!hasAnyRole(locals.user?.role, ['admin', 'staff']))
+    if (!hasAnyRole(locals.user?.role, ['admin', 'organizer']))
       return fail(403, { error: 'No autorizado' })
 
     const form = await superValidate(request, zod4(bulkActionSchema))
@@ -62,7 +62,7 @@ export const actions = {
     })
   },
   deny: async ({ locals, request }) => {
-    if (!hasAnyRole(locals.user?.role, ['admin', 'staff']))
+    if (!hasAnyRole(locals.user?.role, ['admin', 'organizer']))
       return fail(403, { error: 'No autorizado' })
 
     const form = await superValidate(request, zod4(bulkActionSchema))
