@@ -1,7 +1,8 @@
 import { preRegistrations } from '$lib/schema/pre-registrations'
 import { db } from '$lib/server/db/database'
+import { dbTry } from '$lib/server/db/errors'
 import { hasAnyRole } from '$lib/server/utils'
-import { count, eq, inArray } from 'drizzle-orm'
+import { eq, getTableColumns, inArray, sql } from 'drizzle-orm'
 import { fail, message, superValidate } from 'sveltekit-superforms'
 import { zod4 } from 'sveltekit-superforms/adapters'
 
@@ -10,29 +11,44 @@ import type { Actions, PageServerLoad } from './$types'
 import { bulkActionSchema, searchParamsSchema } from './schema'
 
 export const load = (async ({ url }) => {
-  const { page, pageSize } = searchParamsSchema.parse({
+  const { page, pageSize, status } = searchParamsSchema.parse({
     page: url.searchParams.get('page') ?? 1,
     pageSize: url.searchParams.get('pageSize') ?? 10,
+    status: url.searchParams.get('status') ?? 'pendiente',
   })
 
-  const [form, totalResult, data] = await Promise.all([
+  const statusFilter = status !== 'todos' ? eq(preRegistrations.status, status) : undefined
+
+  // Single query: paginated rows + total count via window function
+  const [form, rows] = await Promise.all([
     superValidate(zod4(bulkActionSchema)),
     db
-      .select({ count: count() })
+      .select({
+        ...getTableColumns(preRegistrations),
+        totalCount: sql<number>`COUNT(*) OVER()`.mapWith(Number),
+      })
       .from(preRegistrations)
-      .where(eq(preRegistrations.status, 'pendiente')),
-    db.query.preRegistrations.findMany({
-      limit: pageSize,
-      offset: (page - 1) * pageSize,
-      orderBy: (t, { desc }) => [desc(t.createdAt)],
-      where: eq(preRegistrations.status, 'pendiente'),
-    }),
+      .where(statusFilter)
+      .orderBy(sql`${preRegistrations.createdAt} DESC`)
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
   ])
 
-  const totalCount = totalResult[0].count
+  const totalCount = rows[0]?.totalCount ?? 0
+
+  // Strip the synthetic totalCount field before sending to the client
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const data = rows.map(({ totalCount: _, ...rest }) => rest)
+
   return {
     form,
-    pagination: { page, pageSize, totalCount, totalPages: Math.ceil(totalCount / pageSize) },
+    pagination: {
+      page,
+      pageSize,
+      status,
+      totalCount,
+      totalPages: Math.ceil(totalCount / pageSize),
+    },
     preRegistrations: data,
   }
 }) satisfies PageServerLoad
@@ -45,14 +61,15 @@ export const actions = {
     const form = await superValidate(request, zod4(bulkActionSchema))
     if (!form.valid || form.data.ids.length === 0) return fail(400, { form })
 
-    try {
-      await db
+    const { error } = await dbTry(() =>
+      db
         .update(preRegistrations)
         .set({ status: 'verificado', verifiedAt: new Date(), verifiedBy: locals.user?.id })
-        .where(inArray(preRegistrations.id, form.data.ids))
-    } catch (err) {
-      console.error(err)
+        .where(inArray(preRegistrations.id, form.data.ids)),
+    )
 
+    if (error && error.kind === 'unknown') {
+      console.error('[approve]', error.cause)
       return fail(500, { form })
     }
 
@@ -68,14 +85,15 @@ export const actions = {
     const form = await superValidate(request, zod4(bulkActionSchema))
     if (!form.valid || form.data.ids.length === 0) return fail(400, { form })
 
-    try {
-      await db
+    const { error } = await dbTry(() =>
+      db
         .update(preRegistrations)
         .set({ status: 'rechazado', verifiedAt: new Date(), verifiedBy: locals.user?.id })
-        .where(inArray(preRegistrations.id, form.data.ids))
-    } catch (err) {
-      console.error(err)
+        .where(inArray(preRegistrations.id, form.data.ids)),
+    )
 
+    if (error && error.kind === 'unknown') {
+      console.error('[deny]', error.cause)
       return fail(500, { form })
     }
 

@@ -80,10 +80,19 @@
           }}
         >
           <input name="ids" type="hidden" value={data.id} />
-          <Button disabled={$submitting} formaction="?/deny" type="submit" variant="destructive">
+          <Button
+            disabled={$submitting || data.status === 'rechazado'}
+            formaction="?/deny"
+            type="submit"
+            variant="destructive"
+          >
             Rechazar
           </Button>
-          <Button disabled={$submitting} formaction="?/approve" type="submit">Aceptar</Button>
+          <Button
+            disabled={$submitting || data.status === 'verificado'}
+            formaction="?/approve"
+            type="submit">Aceptar</Button
+          >
         </form>
       {/if}
     </Dialog.Footer>
