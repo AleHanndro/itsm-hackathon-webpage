@@ -38,5 +38,8 @@ export const preRegistrations = table(
     wantsAnnouncements: t.boolean('wants_announcements').notNull(),
     ...timestamps,
   },
-  (table) => [t.check('semester_check', sql`${table.semester} >= 1 AND ${table.semester} <= 12`)],
+  (table) => [
+    t.check('semester_check', sql`${table.semester} >= 1 AND ${table.semester} <= 12`),
+    t.index('preRegistrations_verifiedBy_idx').on(table.verifiedBy),
+  ],
 )

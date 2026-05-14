@@ -3,6 +3,7 @@ import { pgTable as table } from 'drizzle-orm/pg-core'
 import * as t from 'drizzle-orm/pg-core'
 
 import { timestampConfig, timestamps } from './columns.helpers'
+import { teamsUsers } from './teams'
 
 export const users = table('users', {
   banExpires: t.timestamp('ban_expires', timestampConfig),
@@ -86,4 +87,8 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
     fields: [accounts.userId],
     references: [users.id],
   }),
+}))
+
+export const usersTeamsRelations = relations(users, ({ many }) => ({
+  members: many(teamsUsers),
 }))
