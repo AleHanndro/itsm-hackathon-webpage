@@ -1,5 +1,6 @@
 import { teams, teamsUsers } from '$lib/schema/teams'
 import { db } from '$lib/server/db/database'
+import { dbTry } from '$lib/server/db/errors'
 import { hasAnyRole } from '$lib/server/utils'
 import { and, count, eq } from 'drizzle-orm'
 import { fail, message, setError, superValidate } from 'sveltekit-superforms'
@@ -73,10 +74,29 @@ export const actions = {
     if (teamMembers.count >= 5)
       return message(form, { text: 'Este equipo ya está lleno', type: 'error' }, { status: 400 })
 
-    await db.insert(teamsUsers).values({
-      teamId: form.data.teamId,
-      userId: form.data.userId,
-    })
+    const { error: addError } = await dbTry(() =>
+      db.insert(teamsUsers).values({
+        teamId: form.data.teamId,
+        userId: form.data.userId,
+      }),
+    )
+
+    if (addError) {
+      switch (addError.kind) {
+        case 'foreign_key':
+          return setError(form, 'teamId', 'El equipo seleccionado no existe.')
+        case 'unique_violation':
+          return setError(form, 'userId', 'Este usuario ya pertenece a un equipo.')
+
+        case 'unknown':
+          console.error('[addMember]', addError.cause)
+          return message(
+            form,
+            { text: 'Error inesperado al agregar el miembro.', type: 'error' },
+            { status: 500 },
+          )
+      }
+    }
 
     return message(form, { text: 'Miembro agregado exitosamente', type: 'success' })
   },
@@ -93,19 +113,38 @@ export const actions = {
     if (existingLeader)
       return setError(form, 'leadMemberId', 'Este usuario ya fue asignado a un equipo.')
 
-    await db.transaction(async (tx) => {
-      const [team] = await tx
-        .insert(teams)
-        .values({
-          leaderId: form.data.leadMemberId,
-          name: form.data.name,
+    const { error: createError } = await dbTry(() =>
+      db.transaction(async (tx) => {
+        const [team] = await tx
+          .insert(teams)
+          .values({
+            leaderId: form.data.leadMemberId,
+            name: form.data.name,
+          })
+          .returning({ id: teams.id })
+        await tx.insert(teamsUsers).values({
+          teamId: team.id,
+          userId: form.data.leadMemberId,
         })
-        .returning({ id: teams.id })
-      await tx.insert(teamsUsers).values({
-        teamId: team.id,
-        userId: form.data.leadMemberId,
-      })
-    })
+      }),
+    )
+
+    if (createError) {
+      switch (createError.kind) {
+        case 'foreign_key':
+          return setError(form, 'leadMemberId', 'El usuario seleccionado no existe.')
+        case 'unique_violation':
+          return setError(form, 'name', 'Ya existe un equipo con ese nombre.')
+
+        case 'unknown':
+          console.error('[createTeam]', createError.cause)
+          return message(
+            form,
+            { text: 'Error inesperado al crear el equipo.', type: 'error' },
+            { status: 500 },
+          )
+      }
+    }
 
     return message(form, { text: 'Equipo creado exitosamente', type: 'success' })
   },
@@ -116,7 +155,19 @@ export const actions = {
     const form = await superValidate(request, zod4(deleteTeamSchema))
     if (!form.valid) return fail(400, { form })
 
-    await db.delete(teams).where(eq(teams.id, form.data.teamId))
+    const { error: deleteError } = await dbTry(() =>
+      db.delete(teams).where(eq(teams.id, form.data.teamId)),
+    )
+
+    if (deleteError && deleteError.kind === 'unknown') {
+      console.error('[deleteTeam]', deleteError.cause)
+      return message(
+        form,
+        { text: 'Error inesperado al eliminar el equipo.', type: 'error' },
+        { status: 500 },
+      )
+    }
+
     return message(form, { text: 'Equipo eliminado exitosamente', type: 'success' })
   },
   removeMember: async ({ locals, request }) => {
@@ -138,9 +189,23 @@ export const actions = {
       )
     }
 
-    await db
-      .delete(teamsUsers)
-      .where(and(eq(teamsUsers.teamId, form.data.teamId), eq(teamsUsers.userId, form.data.userId)))
+    const { error: removeError } = await dbTry(() =>
+      db
+        .delete(teamsUsers)
+        .where(
+          and(eq(teamsUsers.teamId, form.data.teamId), eq(teamsUsers.userId, form.data.userId)),
+        ),
+    )
+
+    if (removeError && removeError.kind === 'unknown') {
+      console.error('[removeMember]', removeError.cause)
+      return message(
+        form,
+        { text: 'Error inesperado al remover el miembro.', type: 'error' },
+        { status: 500 },
+      )
+    }
+
     return message(form, { text: 'Miembro removido exitosamente', type: 'success' })
   },
   renameTeam: async ({ locals, request }) => {
@@ -150,7 +215,25 @@ export const actions = {
     const form = await superValidate(request, zod4(renameTeamSchema))
     if (!form.valid) return fail(400, { form })
 
-    await db.update(teams).set({ name: form.data.name }).where(eq(teams.id, form.data.teamId))
+    const { error: renameError } = await dbTry(() =>
+      db.update(teams).set({ name: form.data.name }).where(eq(teams.id, form.data.teamId)),
+    )
+
+    if (renameError) {
+      switch (renameError.kind) {
+        case 'unique_violation':
+          return setError(form, 'name', 'Ya existe un equipo con ese nombre.')
+
+        case 'unknown':
+          console.error('[renameTeam]', renameError.cause)
+          return message(
+            form,
+            { text: 'Error inesperado al renombrar el equipo.', type: 'error' },
+            { status: 500 },
+          )
+      }
+    }
+
     return message(form, { text: 'Equipo renombrado exitosamente', type: 'success' })
   },
 } satisfies Actions
