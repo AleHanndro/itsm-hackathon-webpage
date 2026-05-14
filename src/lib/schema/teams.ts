@@ -1,11 +1,11 @@
 import { relations } from 'drizzle-orm'
-import { pgTable as table } from 'drizzle-orm/pg-core'
+import { pgTable } from 'drizzle-orm/pg-core'
 import * as t from 'drizzle-orm/pg-core'
 
 import { users } from './auth'
 import { timestamps } from './columns.helpers'
 
-export const teams = table(
+export const teams = pgTable(
   'teams',
   {
     id: t.bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
@@ -19,7 +19,7 @@ export const teams = table(
   (table) => [t.index('teams_leaderId_idx').on(table.leaderId)],
 )
 
-export const teamsUsers = table(
+export const teamsUsers = pgTable(
   'teams_users',
   {
     createdAt: timestamps.createdAt,

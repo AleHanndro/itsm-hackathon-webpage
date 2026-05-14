@@ -1,11 +1,11 @@
 import { relations } from 'drizzle-orm'
-import { pgTable as table } from 'drizzle-orm/pg-core'
+import { pgTable } from 'drizzle-orm/pg-core'
 import * as t from 'drizzle-orm/pg-core'
 
 import { timestampConfig, timestamps } from './columns.helpers'
 import { teamsUsers } from './teams'
 
-export const users = table('users', {
+export const users = pgTable('users', {
   banExpires: t.timestamp('ban_expires', timestampConfig),
   banned: t.boolean('banned'),
   banReason: t.text('ban_reason'),
@@ -18,7 +18,7 @@ export const users = table('users', {
   ...timestamps,
 })
 
-export const sessions = table(
+export const sessions = pgTable(
   'sessions',
   {
     expiresAt: t.timestamp('expires_at', timestampConfig).notNull(),
@@ -36,7 +36,7 @@ export const sessions = table(
   (table) => [t.index('session_userId_idx').on(table.userId)],
 )
 
-export const accounts = table(
+export const accounts = pgTable(
   'accounts',
   {
     accessToken: t.text('access_token'),
@@ -58,7 +58,7 @@ export const accounts = table(
   (table) => [t.index('account_userId_idx').on(table.userId)],
 )
 
-export const verifications = table(
+export const verifications = pgTable(
   'verifications',
   {
     expiresAt: t.timestamp('expires_at', timestampConfig).notNull(),

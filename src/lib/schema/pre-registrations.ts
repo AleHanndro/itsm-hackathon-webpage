@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm'
-import { pgEnum, pgTable as table } from 'drizzle-orm/pg-core'
+import { pgEnum, pgTable } from 'drizzle-orm/pg-core'
 import * as t from 'drizzle-orm/pg-core'
 
 import { users } from './auth'
@@ -20,7 +20,7 @@ export const shirtSizeEnum = pgEnum('shirt_sizes', [
   '4EG',
 ])
 
-export const preRegistrations = table(
+export const preRegistrations = pgTable(
   'pre_registrations',
   {
     email: t.text('email').notNull().unique(),
