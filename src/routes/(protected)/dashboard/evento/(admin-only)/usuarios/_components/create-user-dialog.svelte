@@ -1,7 +1,6 @@
 <script lang="ts">
   import type { Infer, SuperForm } from 'sveltekit-superforms'
 
-  import { page } from '$app/state'
   import Button from '$lib/components/ui/button.svelte'
   import * as Dialog from '$lib/components/ui/dialog/index'
   import * as Form from '$lib/components/ui/form/index'
@@ -33,11 +32,11 @@
       </Dialog.Description>
     </Dialog.Header>
 
-    {#if page.status >= 400 && $message}
+    {#if $message?.type === 'error'}
       <div
         class="rounded-md border border-destructive/30 bg-destructive/10 px-3 py-2 text-sm text-destructive"
       >
-        {$message}
+        {$message.text}
       </div>
     {/if}
 
