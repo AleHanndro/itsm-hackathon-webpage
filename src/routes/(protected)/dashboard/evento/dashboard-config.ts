@@ -3,6 +3,7 @@ import type { SidebarGroups } from '$lib/components/dashboard-layout/sidebar.sve
 import BookUserIcon from '@lucide/svelte/icons/book-user'
 import HouseIcon from '@lucide/svelte/icons/home'
 import UserIcon from '@lucide/svelte/icons/user'
+import UsersIcon from '@lucide/svelte/icons/users'
 
 const adminSidebarGroups: SidebarGroups = [
   {
@@ -25,6 +26,11 @@ const organizerSidebarGroups: SidebarGroups = [
         icon: BookUserIcon,
         title: 'Prerregistros',
         url: '/dashboard/evento/pre-registros',
+      },
+      {
+        icon: UsersIcon,
+        title: 'Equipos',
+        url: '/dashboard/evento/equipos',
       },
     ],
   },
