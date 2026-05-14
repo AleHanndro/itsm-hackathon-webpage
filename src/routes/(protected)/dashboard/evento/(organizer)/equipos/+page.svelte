@@ -81,6 +81,15 @@
           Añadir miembro
         </Button>
       </TeamCard>
+    {:else}
+      <div
+        class="col-span-full flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-16 text-center"
+      >
+        <p class="text-muted-foreground text-sm">No hay equipos registrados todavía.</p>
+        <p class="text-muted-foreground text-xs">
+          Usa el botón <strong>Crear equipo</strong> para comenzar.
+        </p>
+      </div>
     {/each}
   </div>
 </div>
