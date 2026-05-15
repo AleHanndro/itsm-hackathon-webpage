@@ -56,7 +56,7 @@
 </header>
 
 <article
-  class="line-y mx-auto prose w-full max-w-(--breakpoint-md) px-4 py-10 [--radius:0.25rem] lg:prose-lg lg:border-x lg:border-x-line prose-headings:font-display"
+  class="line-y mx-auto prose w-dvw max-w-(--breakpoint-md) px-4 py-10 [--radius:0.25rem] lg:prose-lg lg:border-x lg:border-x-line prose-headings:font-display"
 >
   <data.post.component />
 </article>
@@ -89,7 +89,7 @@
       }
     }
 
-    code:where(:not(.not-prose, .not-prose *)) {
+    code:where(:not(code[class*='language-'], code[class*='language-'] *)) {
       &::before,
       &::after {
         content: none;
@@ -100,6 +100,7 @@
       border-radius: var(--radius);
       padding-block: 0.2em;
       padding-inline: 0.4em;
+      word-break: break-word;
     }
   }
 </style>
