@@ -13,7 +13,16 @@ export const load = (async ({ request }) => {
     superValidate(zod4(setRoleSchema)),
     auth.api.listUsers({
       headers: request.headers,
-      query: { limit: 100, offset: 0, sortBy: 'createdAt', sortDirection: 'desc' },
+      // not users
+      query: {
+        filterField: 'role',
+        filterOperator: 'ne',
+        filterValue: 'user',
+        limit: 100,
+        offset: 0,
+        sortBy: 'createdAt',
+        sortDirection: 'desc',
+      },
     }),
   ])
 
