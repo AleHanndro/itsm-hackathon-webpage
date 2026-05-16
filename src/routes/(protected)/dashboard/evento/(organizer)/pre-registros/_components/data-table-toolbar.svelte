@@ -30,7 +30,6 @@
   const STATUS_LABELS: Record<StatusFilter, string> = {
     pendiente: 'Pendientes',
     rechazado: 'Rechazados',
-    reclamado: 'Reclamados',
     todos: 'Todos',
     verificado: 'Verificados',
   }

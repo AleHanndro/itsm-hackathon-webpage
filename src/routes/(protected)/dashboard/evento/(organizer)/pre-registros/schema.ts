@@ -1,12 +1,6 @@
 import { z } from '$lib/z'
 
-export const STATUS_OPTIONS = [
-  'todos',
-  'pendiente',
-  'verificado',
-  'rechazado',
-  'reclamado',
-] as const
+export const STATUS_OPTIONS = ['todos', 'pendiente', 'verificado', 'rechazado'] as const
 export type StatusFilter = (typeof STATUS_OPTIONS)[number]
 
 export const bulkActionSchema = z.object({

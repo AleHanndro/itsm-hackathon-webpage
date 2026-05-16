@@ -8,12 +8,7 @@ import { timestampConfig, timestamps } from './columns.helpers'
 export const groups = ['A', 'B', 'C'] as const
 export const engineerings = ['ISC', 'IE', 'IER', 'IEM', 'II'] as const
 
-export const requestStatusEnum = pgEnum('request_status', [
-  'pendiente',
-  'verificado',
-  'rechazado',
-  'reclamado',
-])
+export const requestStatusEnum = pgEnum('request_status', ['pendiente', 'verificado', 'rechazado'])
 export const shirtSizeEnum = pgEnum('shirt_sizes', [
   'ECH',
   'CH',
