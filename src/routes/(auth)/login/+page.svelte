@@ -49,16 +49,16 @@
       {/if}
 
       <form class="flex flex-col gap-4" action="?/signIn" method="POST" use:enhance>
-        <Form.Field name="email" {form}>
+        <Form.Field name="identifier" {form}>
           <Form.Control>
             {#snippet children({ props })}
-              <Form.Label>Correo Electrónico</Form.Label>
+              <Form.Label>Correo o Usuario</Form.Label>
               <Input
                 {...props}
-                autocomplete="email"
-                placeholder="nombre.matricula@itsmotul.edu.mx"
-                type="email"
-                bind:value={$formData.email}
+                autocomplete="username"
+                placeholder="usuario o correo@itsmotul.edu.mx"
+                type="text"
+                bind:value={$formData.identifier}
               />
             {/snippet}
           </Form.Control>

@@ -4,7 +4,8 @@ import { ac, allRoles } from '$lib/permissions'
 import * as schema from '$lib/schema/auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 import { betterAuth } from 'better-auth/minimal'
-import { admin as adminPlugin } from 'better-auth/plugins'
+import { admin as adminPlugin } from 'better-auth/plugins/admin'
+import { username } from 'better-auth/plugins/username'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 
 import { db } from './db/database'
@@ -34,8 +35,8 @@ export const auth = betterAuth({
     },
     user: {
       create: {
-        before: async (user) => {
-          if (user.role !== 'user') return
+        before: async (user, ctx) => {
+          if (user.role !== 'user' || ctx?.path === '/admin/create-user') return
 
           const prereg = await db.query.preRegistrations.findFirst({
             columns: { name: true, status: true },
@@ -52,7 +53,7 @@ export const auth = betterAuth({
     },
   },
   emailAndPassword: { disableSignUp: true, enabled: true },
-  plugins: [sveltekitCookies(getRequestEvent), adminPlugin({ ac, roles: allRoles })],
+  plugins: [sveltekitCookies(getRequestEvent), username(), adminPlugin({ ac, roles: allRoles })],
   secret: env.BETTER_AUTH_SECRET,
   session: {
     cookieCache: {
