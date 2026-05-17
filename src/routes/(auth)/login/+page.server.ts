@@ -30,7 +30,6 @@ export const actions = {
     let authResponse
 
     try {
-      console.info({ isEmail })
       if (isEmail) {
         authResponse = await auth.api.signInEmail({
           body: { email: form.data.identifier, password: form.data.password },
@@ -59,7 +58,6 @@ export const actions = {
       return message(form, { text: 'Error al iniciar sesión.', type: 'error' }, { status: 500 })
     }
 
-    console.info('XD')
     const role = 'role' in authResponse.user ? authResponse.user.role : null
     return redirect(302, getDashboardRoute(role))
   },
