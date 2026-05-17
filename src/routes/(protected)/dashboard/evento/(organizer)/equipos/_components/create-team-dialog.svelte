@@ -3,7 +3,7 @@
   import * as Dialog from '$lib/components/ui/dialog/index'
   import * as Form from '$lib/components/ui/form/index'
   import Input from '$lib/components/ui/input.svelte'
-  import UsersIcon from '@lucide/svelte/icons/users'
+  import PlusIcon from '@lucide/svelte/icons/plus'
   import { type Infer, superForm, type SuperValidated } from 'sveltekit-superforms'
   import { zod4Client } from 'sveltekit-superforms/adapters'
 
@@ -40,11 +40,11 @@
 </script>
 
 <Dialog.Root bind:open>
-  <Dialog.Trigger>
+  <Dialog.Trigger disabled={users.length === 0}>
     {#snippet child({ props })}
-      <Button {...props} class="gap-2">
-        <UsersIcon class="size-4" />
-        Crear Equipo
+      <Button {...props} class="gap-2 self-end">
+        <PlusIcon class="size-4" />
+        Añadir Equipo
       </Button>
     {/snippet}
   </Dialog.Trigger>
@@ -53,7 +53,7 @@
     <Dialog.Header>
       <Dialog.Title>Nuevo Equipo</Dialog.Title>
       <Dialog.Description>
-        Ingresa el nombre del equipo y selecciona a su líder para crearlo.
+        Ingresa el nombre del equipo y, opcionalmente, selecciona a su líder.
       </Dialog.Description>
     </Dialog.Header>
 
@@ -73,7 +73,12 @@
         <Form.FieldErrors />
       </Form.Field>
 
-      <SelectUser name="leadMemberId" form={createForm} label="Líder del Equipo" {users} />
+      <SelectUser
+        name="leadMemberId"
+        form={createForm}
+        label="Líder del Equipo (Opcional)"
+        {users}
+      />
 
       <Dialog.Footer>
         <Form.Button class="w-full" disabled={$submitting || $allErrors.length > 0}>

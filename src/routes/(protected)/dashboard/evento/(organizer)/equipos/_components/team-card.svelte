@@ -10,6 +10,11 @@
 
   import type { TeamWithMembers } from '../schema'
 
+  const ROLE_LABELS: Record<string, string> = {
+    leader: 'Líder',
+    speaker: 'Orador',
+  }
+
   const {
     children,
     requestDelete,
@@ -51,27 +56,34 @@
   </Card.Header>
 
   <Card.Content class="flex-1 space-y-3">
-    {#each team.members as { user } (user.id)}
+    {#if team.project}
+      <div class="rounded-md bg-secondary/50 p-3 text-sm">
+        <span class="font-medium text-foreground">Proyecto:</span>
+        <span class="text-muted-foreground">{team.project.name}</span>
+      </div>
+    {/if}
+    {#each team.members as member (member.user.id)}
+      {@const isLeader = member.roles.includes('leader')}
       <div class="group flex items-center justify-between">
         <div class="flex items-center gap-3">
           <Avatar.Root class="flex items-center gap-3">
-            <Avatar.Fallback>{user.name.charAt(0)}</Avatar.Fallback>
+            <Avatar.Fallback>{member.user.name.charAt(0)}</Avatar.Fallback>
           </Avatar.Root>
           <div class="flex flex-col">
-            <div class="flex items-center gap-3">
-              <span class="text-sm font-medium">{user.name}</span>
-              {#if user.id === team.leaderId}
-                <span class="text-xs text-accent-2">Líder</span>
-              {/if}
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-medium">{member.user.name}</span>
+              {#each member.roles as role (role)}
+                <span class="text-xs text-accent-2">{ROLE_LABELS[role] ?? role}</span>
+              {/each}
             </div>
-            <span class="text-sm text-muted-foreground">{user.email}</span>
+            <span class="text-sm text-muted-foreground">{member.user.email}</span>
           </div>
         </div>
 
-        {#if user.id !== team.leaderId}
+        {#if !isLeader}
           <Button
             class="size-8 text-destructive transition-opacity group-hover:opacity-100 focus-within:opacity-100 hover:bg-destructive/10 sm:opacity-0"
-            onclick={() => requestDelete('member', { teamId: team.id, userId: user.id })}
+            onclick={() => requestDelete('member', { teamId: team.id, userId: member.user.id })}
             size="icon"
             variant="ghost"
           >

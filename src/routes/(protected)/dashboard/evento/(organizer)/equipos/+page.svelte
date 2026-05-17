@@ -1,5 +1,6 @@
 <script lang="ts">
   import Button from '$lib/components/ui/button.svelte'
+  import UserPlusIcon from '@lucide/svelte/icons/user-plus'
 
   import type { PageData } from './$types'
 
@@ -67,30 +68,40 @@
   }
 </script>
 
-<div class="space-y-6">
-  <header class="flex items-center justify-between">
+<div class="space-y-6 p-4">
+  <div class="flex flex-col">
     <h1 class="text-2xl font-bold">Equipos</h1>
+    <p class="text-muted-foreground">Administra los equipos y sus integrantes.</p>
+  </div>
 
+  <div class="flex flex-col gap-3">
     <CreateTeamDialog form={data.createTeamForm} users={data.users} />
-  </header>
 
-  <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-    {#each data.teams as team (team.id)}
-      <TeamCard {requestDelete} {requestEditName} {team}>
-        <Button class="w-full" onclick={() => openAddMemberDialog(team.id)} variant="secondary">
-          Añadir miembro
-        </Button>
-      </TeamCard>
-    {:else}
-      <div
-        class="col-span-full flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-16 text-center"
-      >
-        <p class="text-muted-foreground text-sm">No hay equipos registrados todavía.</p>
-        <p class="text-muted-foreground text-xs">
-          Usa el botón <strong>Crear equipo</strong> para comenzar.
-        </p>
-      </div>
-    {/each}
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {#each data.teams as team (team.id)}
+        <TeamCard {requestDelete} {requestEditName} {team}>
+          <div class="flex w-full flex-col gap-2">
+            <Button
+              class="w-full gap-2"
+              onclick={() => openAddMemberDialog(team.id)}
+              variant="secondary"
+            >
+              <UserPlusIcon class="size-4" />
+              Añadir miembro
+            </Button>
+          </div>
+        </TeamCard>
+      {:else}
+        <div
+          class="col-span-full flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed py-16 text-center"
+        >
+          <p class="text-muted-foreground text-sm">No hay equipos registrados todavía.</p>
+          <p class="text-muted-foreground text-xs">
+            Usa el botón <strong>Crear equipo</strong> para comenzar.
+          </p>
+        </div>
+      {/each}
+    </div>
   </div>
 </div>
 

@@ -1,6 +1,8 @@
 import { env } from '$env/dynamic/private'
 import * as authSchema from '$lib/schema/auth'
 import * as preRegistrationsSchema from '$lib/schema/pre-registrations'
+import * as projectsSchema from '$lib/schema/projects'
+import * as stagesSchema from '$lib/schema/stages'
 import * as teamsSchema from '$lib/schema/teams'
 import { drizzle } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
@@ -9,7 +11,13 @@ if (!env.DATABASE_URL) {
   throw new Error('DATABASE_URL environment variable is not set')
 }
 
-const schema = { ...authSchema, ...preRegistrationsSchema, ...teamsSchema }
+const schema = {
+  ...authSchema,
+  ...preRegistrationsSchema,
+  ...teamsSchema,
+  ...projectsSchema,
+  ...stagesSchema,
+}
 
 const client = postgres(env.DATABASE_URL, {
   prepare: false,

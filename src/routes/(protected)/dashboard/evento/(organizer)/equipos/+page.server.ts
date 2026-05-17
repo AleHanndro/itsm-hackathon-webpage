@@ -31,16 +31,17 @@ export const load = (async () => {
       ),
   })
   const teams = await db.query.teams.findMany({
-    columns: { id: true, leaderId: true, name: true },
+    columns: { id: true, name: true, projectId: true },
     with: {
       members: {
-        columns: {},
+        columns: { roles: true },
         with: {
           user: {
             columns: { email: true, id: true, name: true },
           },
         },
       },
+      project: { columns: { id: true, name: true } },
     },
   })
 
@@ -76,6 +77,7 @@ export const actions = {
 
     const { error: addError } = await dbTry(() =>
       db.insert(teamsUsers).values({
+        roles: form.data.roles,
         teamId: form.data.teamId,
         userId: form.data.userId,
       }),
@@ -86,6 +88,14 @@ export const actions = {
         case 'foreign_key':
           return setError(form, 'teamId', 'El equipo seleccionado no existe.')
         case 'unique_violation':
+          // Could be the composite PK (user already in team) or the one-leader index
+          if (form.data.roles.includes('leader')) {
+            return message(
+              form,
+              { text: 'Este equipo ya tiene un líder asignado.', type: 'error' },
+              { status: 400 },
+            )
+          }
           return setError(form, 'userId', 'Este usuario ya pertenece a un equipo.')
 
         case 'unknown':
@@ -107,25 +117,31 @@ export const actions = {
     const form = await superValidate(request, zod4(createTeamSchema))
     if (!form.valid) return fail(400, { form })
 
-    const existingLeader = await db.query.teamsUsers.findFirst({
-      where: (t, { eq }) => eq(t.userId, form.data.leadMemberId),
-    })
-    if (existingLeader)
-      return setError(form, 'leadMemberId', 'Este usuario ya fue asignado a un equipo.')
+    const leadId = form.data.leadMemberId ?? null
+    const isLeadIdValid = !!leadId && leadId.trim().length > 0
+
+    if (isLeadIdValid) {
+      const existingLeader = await db.query.teamsUsers.findFirst({
+        where: (t, { eq }) => eq(t.userId, leadId),
+      })
+      if (existingLeader)
+        return setError(form, 'leadMemberId', 'Este usuario ya fue asignado a un equipo.')
+    }
 
     const { error: createError } = await dbTry(() =>
       db.transaction(async (tx) => {
         const [team] = await tx
           .insert(teams)
-          .values({
-            leaderId: form.data.leadMemberId,
-            name: form.data.name,
-          })
+          .values({ name: form.data.name, projectId: null })
           .returning({ id: teams.id })
-        await tx.insert(teamsUsers).values({
-          teamId: team.id,
-          userId: form.data.leadMemberId,
-        })
+
+        if (isLeadIdValid) {
+          await tx.insert(teamsUsers).values({
+            roles: ['leader'],
+            teamId: team.id,
+            userId: leadId,
+          })
+        }
       }),
     )
 
@@ -177,11 +193,12 @@ export const actions = {
     const form = await superValidate(request, zod4(removeMemberSchema))
     if (!form.valid) return fail(400, { form })
 
-    const team = await db.query.teams.findFirst({
-      where: (t, { eq }) => eq(t.id, form.data.teamId),
+    const membership = await db.query.teamsUsers.findFirst({
+      where: (t, { and, eq }) =>
+        and(eq(t.teamId, form.data.teamId), eq(t.userId, form.data.userId)),
     })
 
-    if (team?.leaderId === form.data.userId) {
+    if (membership?.roles.includes('leader')) {
       return message(
         form,
         { text: 'No puedes remover al líder. Cambia de líder o elimina el equipo.', type: 'error' },
