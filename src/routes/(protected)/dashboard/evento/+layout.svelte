@@ -12,7 +12,9 @@
   // svelte-ignore state_referenced_locally
   const items = getSidebarGroups({
     isAdmin: data.isAdmin,
+    isEvaluator: data.isEvaluator,
     isOrganizer: data.user.role === 'organizer',
+    stages: data.stages,
   })
 </script>
 
