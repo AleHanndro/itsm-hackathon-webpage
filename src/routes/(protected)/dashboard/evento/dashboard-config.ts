@@ -41,6 +41,11 @@ const organizerSidebarGroups: SidebarGroups = [
         title: 'Proyectos',
         url: '/dashboard/evento/proyectos',
       },
+      {
+        icon: UserIcon,
+        title: 'Evaluadores',
+        url: '/dashboard/evento/evaluadores',
+      },
     ],
   },
 ]
