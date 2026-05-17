@@ -14,10 +14,6 @@ export const stages = pgTable('stages', {
   ...timestamps,
 })
 
-export const stagesRelations = relations(stages, ({ many }) => ({
-  stagesProjects: many(stagesProjects),
-}))
-
 export const stagesProjects = pgTable(
   'stages_projects',
   {
@@ -83,4 +79,36 @@ export const commentsRelations = relations(comments, ({ one }) => ({
     fields: [comments.projectId, comments.stageId],
     references: [stagesProjects.projectId, stagesProjects.stageId],
   }),
+}))
+
+export const stagesEvaluators = pgTable(
+  'stages_evaluators',
+  {
+    stageId: t
+      .bigint('stage_id', { mode: 'number' })
+      .references(() => stages.id, { onDelete: 'cascade' })
+      .notNull(),
+    userId: t
+      .text('user_id')
+      .references(() => users.id, { onDelete: 'cascade' })
+      .notNull(),
+    ...timestamps,
+  },
+  (table) => [t.primaryKey({ columns: [table.stageId, table.userId] })],
+)
+
+export const stagesEvaluatorsRelations = relations(stagesEvaluators, ({ one }) => ({
+  stage: one(stages, {
+    fields: [stagesEvaluators.stageId],
+    references: [stages.id],
+  }),
+  user: one(users, {
+    fields: [stagesEvaluators.userId],
+    references: [users.id],
+  }),
+}))
+
+export const stagesRelations = relations(stages, ({ many }) => ({
+  stagesEvaluators: many(stagesEvaluators),
+  stagesProjects: many(stagesProjects),
 }))

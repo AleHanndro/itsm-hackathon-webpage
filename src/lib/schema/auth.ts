@@ -3,7 +3,7 @@ import { pgTable } from 'drizzle-orm/pg-core'
 import * as t from 'drizzle-orm/pg-core'
 
 import { timestampConfig, timestamps } from './columns.helpers'
-import { comments } from './stages'
+import { comments, stagesEvaluators } from './stages'
 import { teamsUsers } from './teams'
 
 export const users = pgTable('users', {
@@ -78,6 +78,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   comments: many(comments),
   members: many(teamsUsers),
   sessions: many(sessions),
+  stagesEvaluators: many(stagesEvaluators),
 }))
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({

@@ -35,7 +35,7 @@
     validators: zod4Client(gradeStageSchema),
   })
 
-  const { enhance, form: formData, submitting } = gradeForm
+  const { allErrors, enhance, form: formData, submitting } = gradeForm
 
   $effect(() => {
     if (team.project?.id) {
@@ -82,27 +82,33 @@
         </Form.Control>
       </Form.Field>
 
-      <div class="flex items-end gap-2">
-        <div class="flex-1">
-          <Form.Field name="score" form={gradeForm}>
+      <div class="flex gap-2">
+        <Form.Field name="score" class="flex-1" form={gradeForm}>
+          <div class="flex items-end gap-2">
             <Form.Control>
               {#snippet children({ props })}
-                <Form.Label class="text-xs font-medium">Calificación</Form.Label>
-                <Input
-                  {...props}
-                  max="100"
-                  min="0"
-                  placeholder="0 - 100"
-                  required
-                  type="number"
-                  bind:value={$formData.score}
-                />
+                <div class="flex-1 space-y-2">
+                  <Form.Label class="text-xs font-medium">Calificación</Form.Label>
+                  <Input
+                    {...props}
+                    max="100"
+                    min="0"
+                    placeholder="0 - 100"
+                    required
+                    type="number"
+                    bind:value={$formData.score}
+                  />
+                </div>
               {/snippet}
             </Form.Control>
-            <Form.FieldErrors />
-          </Form.Field>
-        </div>
-        <Form.Button class="h-10" disabled={$submitting} size="sm">Guardar</Form.Button>
+            <Form.Button
+              disabled={$allErrors.length > 0 || $submitting || $formData.score === initialScore}
+            >
+              Guardar
+            </Form.Button>
+          </div>
+          <Form.FieldErrors />
+        </Form.Field>
       </div>
     </form>
   </Card.Content>
