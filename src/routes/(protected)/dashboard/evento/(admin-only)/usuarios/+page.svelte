@@ -35,7 +35,7 @@
   <title>Gestión de Usuarios</title>
 </svelte:head>
 
-<div class="space-y-6">
+<div class="space-y-6 p-4">
   <!-- Header -->
   <div class="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
     <div>

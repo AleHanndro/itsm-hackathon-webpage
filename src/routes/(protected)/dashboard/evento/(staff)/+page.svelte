@@ -68,7 +68,7 @@
   )
 </script>
 
-<div class="space-y-8 p-4 md:p-8">
+<div class="space-y-8 p-4">
   <div class="flex items-center gap-3">
     <div class="rounded-xl bg-primary/10 p-2.5">
       <LayoutDashboardIcon class="size-6 text-primary" />

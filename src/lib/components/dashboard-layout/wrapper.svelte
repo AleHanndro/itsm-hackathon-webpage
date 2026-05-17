@@ -19,7 +19,7 @@
   <DashboardSidebar {items} {user} />
   <Sidebar.Inset>
     <header class="flex h-16 shrink-0 items-center gap-2">
-      <div class="flex items-center gap-2 px-4">
+      <div class="flex items-center gap-2 px-8">
         <Sidebar.Trigger class="-ms-1" />
       </div>
     </header>
