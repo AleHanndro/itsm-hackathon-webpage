@@ -3,18 +3,21 @@ import { pgTable } from 'drizzle-orm/pg-core'
 import * as t from 'drizzle-orm/pg-core'
 
 import { timestampConfig, timestamps } from './columns.helpers'
+import { comments } from './stages'
 import { teamsUsers } from './teams'
 
 export const users = pgTable('users', {
   banExpires: t.timestamp('ban_expires', timestampConfig),
   banned: t.boolean('banned'),
   banReason: t.text('ban_reason'),
+  displayUsername: t.text('display_username'),
   email: t.text('email').notNull().unique(),
   emailVerified: t.boolean('email_verified').default(false).notNull(),
   id: t.text('id').primaryKey(),
   image: t.text('image'),
   name: t.text('name').notNull(),
   role: t.text('role'),
+  username: t.varchar('username', { length: 16 }).unique(),
   ...timestamps,
 })
 
@@ -72,6 +75,8 @@ export const verifications = pgTable(
 
 export const usersRelations = relations(users, ({ many }) => ({
   accounts: many(accounts),
+  comments: many(comments),
+  members: many(teamsUsers),
   sessions: many(sessions),
 }))
 
@@ -87,8 +92,4 @@ export const accountsRelations = relations(accounts, ({ one }) => ({
     fields: [accounts.userId],
     references: [users.id],
   }),
-}))
-
-export const usersTeamsRelations = relations(users, ({ many }) => ({
-  members: many(teamsUsers),
 }))
