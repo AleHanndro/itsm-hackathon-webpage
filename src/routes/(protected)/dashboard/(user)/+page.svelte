@@ -1,20 +1,98 @@
 <script lang="ts">
-  import type { LayoutData } from './$types'
+  import { resolve } from '$app/paths'
+  import Progress from '$lib/components/progress.svelte'
+  import Separator from '$lib/components/ui/separator.svelte'
 
-  const { data }: { data: LayoutData } = $props()
+  import type { PageData } from './$types'
+
+  const { data }: { data: PageData } = $props()
+
+  const progressColor = $derived(
+    data.averageScore >= 90
+      ? 'bg-amber-400'
+      : data.averageScore >= 70
+        ? 'bg-green-500'
+        : 'bg-red-500',
+  )
 </script>
 
-<h1>
-  Bienvenido {data.user.name}
-</h1>
+{#if !data.eventStarted}
+  <div class="mt-12 mb-12 flex flex-col items-center justify-center space-y-4 text-center">
+    <h2 class="text-2xl font-bold text-primary">Evento no iniciado</h2>
+    <p class="max-w-md text-muted-foreground">
+      El evento aún no ha comenzado. La fecha de inicio está programada para el 29 de mayo de 2026,
+      a las 09:00 A.M.
+    </p>
+  </div>
+{/if}
 
-<div class="flex h-full flex-col items-center justify-center">
-  <h1>
-    {!data.approved ? 'Acceso denegado' : 'Evento no iniciado'}
-  </h1>
-  <p>
-    {!data.approved
-      ? 'Tu prerregistro aún no ha sido aprobado. Por favor, espera a que el equipo de organización revise tu solicitud.'
-      : 'El evento aún no ha comenzado. La fecha de inicio está programada para el 29 de mayo de 2026, a las 09:00 A.M.'}
-  </p>
-</div>
+{#if data.teamInfo}
+  <div class="mt-8 space-y-6">
+    <div>
+      <h2 class="text-xl font-bold">Tu Equipo: {data.teamInfo.name}</h2>
+      <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {#each data.teamInfo.members as member (member.email)}
+          <div class="rounded-lg border bg-card p-4 text-card-foreground shadow-sm">
+            <p class="font-semibold">{member.name}</p>
+            <p class="text-sm text-muted-foreground">{member.email}</p>
+            {#if member.roles.length > 0}
+              <div class="mt-2 flex gap-1">
+                {#each member.roles as role, idx (idx)}
+                  <span
+                    class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold"
+                  >
+                    {role}
+                  </span>
+                {/each}
+              </div>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    {#if data.eventStarted}
+      <Separator />
+      {#if data.projectInfo}
+        <div>
+          <h2 class="text-xl font-bold">Proyecto: {data.projectInfo.name}</h2>
+          <p class="mt-2 text-muted-foreground">{data.projectInfo.description}</p>
+        </div>
+
+        <div class="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-semibold">Progreso General</h3>
+            <span class="text-lg font-bold">{data.averageScore.toFixed(1)}%</span>
+          </div>
+
+          <Progress class="h-3" indicatorClass={progressColor} value={data.averageScore} />
+
+          <div class="mt-6">
+            <h4 class="mb-4 font-medium">Calificaciones por Etapa</h4>
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {#each data.stages as stage (stage.name)}
+                <a
+                  class="block rounded-lg border p-4 transition-colors hover:border-primary"
+                  href={resolve('/(protected)/dashboard/(user)/etapas/[stageOrder]', {
+                    stageOrder: stage.order.toString(),
+                  })}
+                >
+                  <p class="text-sm font-semibold">{stage.name}</p>
+                  <p class="mt-2 text-2xl font-bold">{stage.score}</p>
+                </a>
+              {/each}
+            </div>
+          </div>
+        </div>
+      {:else}
+        <div class="rounded-lg border border-dashed p-4 text-center text-muted-foreground">
+          Aún no tienen un proyecto asignado.
+        </div>
+      {/if}
+    {/if}
+  </div>
+{:else}
+  <div class="mt-8 rounded-lg border border-dashed p-6 text-center">
+    <p class="text-muted-foreground">Aún no perteneces a ningún equipo.</p>
+  </div>
+{/if}

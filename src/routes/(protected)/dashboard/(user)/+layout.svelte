@@ -5,7 +5,7 @@
 
   import type { LayoutData } from './$types'
 
-  import { groups } from './dashboard-config'
+  import { getGroups } from './dashboard-config'
 
   const { children, data }: { children: Snippet; data: LayoutData } = $props()
 </script>
@@ -14,6 +14,6 @@
   <title>Dashboard - Participante</title>
 </svelte:head>
 
-<DashboardWrapper items={data.isAuthorized ? groups : undefined} user={data.user}>
+<DashboardWrapper items={data.isAuthorized ? getGroups(data.stages) : undefined} user={data.user}>
   {@render children()}
 </DashboardWrapper>
