@@ -9,49 +9,10 @@ import { username } from 'better-auth/plugins/username'
 import { sveltekitCookies } from 'better-auth/svelte-kit'
 
 import { db } from './db/database'
-import { syncGoogleImageToUser } from './utils'
 
 export const auth = betterAuth({
-  account: {
-    accountLinking: {
-      enabled: true,
-      trustedProviders: ['google'],
-    },
-  },
   baseURL: env.ORIGIN,
   database: drizzleAdapter(db, { provider: 'pg', schema, usePlural: true }),
-  databaseHooks: {
-    account: {
-      create: {
-        after: async (account) => {
-          await syncGoogleImageToUser({ account, db, userTable: schema.users })
-        },
-      },
-      update: {
-        after: async (account) => {
-          await syncGoogleImageToUser({ account, db, userTable: schema.users })
-        },
-      },
-    },
-    user: {
-      create: {
-        before: async (user, ctx) => {
-          if (user.role !== 'user' || ctx?.path === '/admin/create-user') return
-
-          const prereg = await db.query.preRegistrations.findFirst({
-            columns: { name: true, status: true },
-            where: (t, { eq }) => eq(t.email, user.email),
-          })
-
-          if (!prereg) return false
-
-          return {
-            data: { ...user, name: prereg.name },
-          }
-        },
-      },
-    },
-  },
   emailAndPassword: { disableSignUp: true, enabled: true },
   plugins: [sveltekitCookies(getRequestEvent), username(), adminPlugin({ ac, roles: allRoles })],
   secret: env.BETTER_AUTH_SECRET,
@@ -59,12 +20,6 @@ export const auth = betterAuth({
     cookieCache: {
       enabled: true,
       maxAge: 7 * 24 * 60 * 60,
-    },
-  },
-  socialProviders: {
-    google: {
-      clientId: env.GOOGLE_CLIENT_ID,
-      clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
 })

@@ -61,17 +61,7 @@ export const actions = {
     const role = 'role' in authResponse.user ? authResponse.user.role : null
     return redirect(302, getDashboardRoute(role))
   },
-  signInSocial: async () => {
-    const result = await auth.api.signInSocial({
-      body: { callbackURL: '/dashboard' satisfies Pathname, provider: 'google' },
-    })
 
-    if (result.url) {
-      return redirect(302, result.url)
-    }
-
-    return fail(400, { error: 'Error al iniciar sesión con Google.' })
-  },
   signOut: async ({ request }) => {
     await auth.api.signOut({ headers: request.headers })
     return redirect(302, '/login' satisfies Pathname)
