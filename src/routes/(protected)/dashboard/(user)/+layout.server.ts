@@ -1,10 +1,11 @@
 import { db } from '$lib/server/db/database'
-import { isUserAuthorized } from '$lib/server/utils'
+import { hasEventStarted, isUserAuthorized } from '$lib/server/utils'
 
 import type { LayoutServerLoad } from './$types'
 
 export const load = (async ({ locals }) => {
-  const { approved, authorized, eventStarted } = await isUserAuthorized(locals.user?.email)
+  const { approved, authorized } = await isUserAuthorized(locals.user?.email)
+  const eventStarted = hasEventStarted()
 
   const stages = await db.query.stages.findMany({
     columns: { name: true, order: true },

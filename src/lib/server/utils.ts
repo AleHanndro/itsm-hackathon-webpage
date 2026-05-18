@@ -33,13 +33,12 @@ export const isUserAuthorized = async (email?: string) => {
       })
     : null
 
-  const now = new Date()
   const isApproved = user?.status === 'verificado'
-  const hasEventStarted = now >= EVENT_START_DATE
 
   return {
     approved: isApproved,
-    authorized: isApproved && hasEventStarted,
-    eventStarted: hasEventStarted,
+    authorized: !(isApproved && hasEventStarted),
   }
 }
+
+export const hasEventStarted = () => new Date() >= EVENT_START_DATE
