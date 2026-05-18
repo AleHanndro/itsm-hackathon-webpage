@@ -2,6 +2,8 @@
   import { resolve } from '$app/paths'
   import Progress from '$lib/components/progress.svelte'
   import Separator from '$lib/components/ui/separator.svelte'
+  import { EVENT_START_DATE, userRolesMap } from '$lib/consts'
+  import { formatDate } from '$lib/utils'
 
   import type { PageData } from './$types'
 
@@ -20,8 +22,8 @@
   <div class="mt-12 mb-12 flex flex-col items-center justify-center space-y-4 text-center">
     <h2 class="text-2xl font-bold text-primary">Evento no iniciado</h2>
     <p class="max-w-md text-muted-foreground">
-      El evento aún no ha comenzado. La fecha de inicio está programada para el 29 de mayo de 2026,
-      a las 09:00 A.M.
+      El evento aún no ha comenzado. La fecha de inicio está programada para el
+      {formatDate(EVENT_START_DATE, { withTime: true })}
     </p>
   </div>
 {/if}
@@ -41,7 +43,7 @@
                   <span
                     class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold"
                   >
-                    {role}
+                    {userRolesMap[role]}
                   </span>
                 {/each}
               </div>

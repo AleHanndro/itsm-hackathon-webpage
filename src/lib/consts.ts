@@ -7,6 +7,16 @@ export const EVENT_START_DATE = new Date('2026-05-29T09:00:00-06:00')
 export const SITE_TITLE = 'ITSM Hackatón'
 export const SITE_DESCRIPTION = 'ITSM Hackatón 2026'
 
+export const userRolesMap: Record<string, string> = {
+  admin: 'Administrador',
+  evaluator: 'Evaluador',
+  leader: 'Líder',
+  organizer: 'Organizador',
+  speaker: 'Expositor',
+  staff: 'Staff',
+  user: 'Usuario',
+}
+
 export const categoryMap: Record<Required<Post>['category'], string> = {
   anuncio: 'Anuncio',
   blog: 'Blog',

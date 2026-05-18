@@ -4,16 +4,12 @@
   import * as Avatar from '$lib/components/avatar/index'
   import Button from '$lib/components/ui/button.svelte'
   import * as Card from '$lib/components/ui/card/index'
+  import { userRolesMap } from '$lib/consts'
   import PencilLineIcon from '@lucide/svelte/icons/pencil-line'
   import TrashIcon from '@lucide/svelte/icons/trash-2'
   import XIcon from '@lucide/svelte/icons/x'
 
   import type { TeamWithMembers } from '../schema'
-
-  const ROLE_LABELS: Record<string, string> = {
-    leader: 'Líder',
-    speaker: 'Orador',
-  }
 
   const {
     children,
@@ -73,7 +69,7 @@
             <div class="flex items-center gap-2">
               <span class="text-sm font-medium">{member.user.name}</span>
               {#each member.roles as role (role)}
-                <span class="text-xs text-accent-2">{ROLE_LABELS[role] ?? role}</span>
+                <span class="text-xs text-accent-2">{userRolesMap[role] ?? role}</span>
               {/each}
             </div>
             <span class="text-sm text-muted-foreground">{member.user.email}</span>
