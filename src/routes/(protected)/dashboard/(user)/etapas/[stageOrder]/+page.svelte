@@ -1,14 +1,46 @@
 <script lang="ts">
-  import { enhance } from '$app/forms'
-  import Button from '$lib/components/ui/button.svelte'
+  import { page } from '$app/state'
   import * as Card from '$lib/components/ui/card'
-  import Input from '$lib/components/ui/input.svelte'
+  import { superForm } from 'sveltekit-superforms'
+  import { zod4Client } from 'sveltekit-superforms/adapters'
 
-  import type { ActionData, PageData } from './$types'
+  import type { PageData } from './$types'
 
-  const { data, form }: { data: PageData; form: ActionData } = $props()
+  import UploadAttachmentForm from '../components/upload-attachment-form.svelte'
+  import { clientAttachmentsSchema } from '../schema'
 
-  let isSubmitting = $state(false)
+  const { data }: { data: PageData } = $props()
+
+  // svelte-ignore state_referenced_locally
+  const form = superForm(data.form, {
+    multipleSubmits: 'abort',
+    onUpdated: ({ form: formUpdated }) => {
+      if (formUpdated.valid) {
+        form.reset({ data: { attachments: [null] } })
+      }
+    },
+    validators: zod4Client(clientAttachmentsSchema),
+  })
+
+  const currentStageOrder = $derived(page.params.stageOrder)
+  const { form: formData, validateForm } = form
+
+  const handleFileInputChange = (
+    e: Event & { currentTarget: EventTarget & HTMLInputElement },
+    index: number,
+  ) => {
+    const file = e.currentTarget.files?.item(0) ?? null
+    $formData.attachments[index] = file
+  }
+
+  const addSlot = () => {
+    $formData.attachments = [...$formData.attachments, null]
+  }
+
+  const removeSlot = (index: number) => {
+    $formData.attachments = $formData.attachments.filter((_, i) => i !== index)
+    void validateForm({ focusOnError: false, update: true })
+  }
 </script>
 
 <div class="space-y-6">
@@ -17,90 +49,59 @@
     <p class="mt-2 text-muted-foreground">{data.stage.description || 'Sin descripción'}</p>
   </div>
 
-  <div class="grid gap-6 md:grid-cols-2">
-    <Card.Root class="p-6">
-      <h2 class="mb-4 text-xl font-semibold">Envío de Entregable</h2>
-      <p class="mb-6 text-sm text-muted-foreground">
-        Solo el líder del equipo puede enviar el archivo correspondiente a esta etapa.
-      </p>
-
-      <form
-        class="space-y-4"
-        enctype="multipart/form-data"
-        method="POST"
-        use:enhance={() => {
-          isSubmitting = true
-          return async ({ update }) => {
-            isSubmitting = false
-            await update()
-          }
-        }}
-      >
-        <div>
-          <Input
-            name="file"
-            accept=".pdf,.zip,.rar"
-            disabled={!data.isLeader || isSubmitting}
-            required
-            type="file"
-          />
-        </div>
-
-        {#if form}
-          <div
-            class="rounded-md p-3 text-sm {form.success
-              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
-              : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}"
-          >
-            {form.message}
-          </div>
-        {/if}
-
-        <Button class="w-full" disabled={!data.isLeader || isSubmitting} type="submit">
-          {isSubmitting ? 'Enviando...' : 'Subir Archivo'}
-        </Button>
-
-        {#if !data.isLeader}
-          <p class="mt-2 text-center text-xs text-muted-foreground">
-            Funcionalidad deshabilitada. Solo el líder del equipo puede realizar el envío.
-          </p>
-        {/if}
-      </form>
-    </Card.Root>
-
+  <div class="grid gap-6 md:grid-cols-[1fr_var(--breakpoint-md)]">
     <div class="space-y-6">
-      <Card.Root class="p-6">
-        <h2 class="mb-2 text-xl font-semibold">Calificación Actual</h2>
-        <div class="flex items-end gap-2">
-          <span class="text-4xl font-bold">{data.score}</span>
-          <span class="mb-1 text-muted-foreground">/ 100</span>
-        </div>
+      <Card.Root>
+        <Card.Header>
+          <Card.Title>Calificación Actual</Card.Title>
+        </Card.Header>
+        <Card.Content>
+          <div class="flex items-end gap-2">
+            <span class="text-4xl font-bold">{data.score}</span>
+            <span class="mb-1 text-muted-foreground">/ 100</span>
+          </div>
+        </Card.Content>
       </Card.Root>
 
-      <Card.Root class="p-6">
-        <h2 class="mb-4 text-xl font-semibold">Comentarios / Retroalimentación</h2>
+      <Card.Root>
+        <Card.Header>
+          <Card.Title>Envío de Entregable</Card.Title>
+          <Card.Description>
+            Solo el líder del equipo puede enviar el archivo correspondiente a esta etapa.
+          </Card.Description>
+        </Card.Header>
+        <Card.Content>
+          {#key currentStageOrder}
+            <UploadAttachmentForm
+              {addSlot}
+              {form}
+              {handleFileInputChange}
+              isLeader={data.isLeader}
+              {removeSlot}
+            />
+          {/key}
+        </Card.Content>
+      </Card.Root>
+    </div>
 
+    <Card.Root>
+      <Card.Header>
+        <Card.Title>Retroalimentación</Card.Title>
+      </Card.Header>
+      <Card.Content class="h-full">
         {#if data.comments.length > 0}
           <div class="space-y-4">
             {#each data.comments as comment (comment.id)}
               <div class="rounded-lg border bg-muted/50 p-4">
                 <div class="mb-2 flex items-center gap-2">
-                  {#if comment.author?.image}
-                    <img
-                      class="h-6 w-6 rounded-full"
-                      alt={comment.author.name}
-                      src={comment.author.image}
-                    />
-                  {:else}
-                    <div
-                      class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary"
-                    >
-                      {comment.author?.name?.charAt(0) || 'U'}
-                    </div>
-                  {/if}
-                  <span class="text-sm font-medium"
-                    >{comment.author?.name || 'Usuario desconocido'}</span
+                  <div
+                    class="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary"
                   >
+                    {comment.author?.name?.charAt(0) || 'U'}
+                  </div>
+                  <span class="text-sm font-medium">
+                    {comment.author?.name || 'Usuario desconocido'}
+                  </span>
                   <span class="text-xs text-muted-foreground">
                     {new Date(comment.createdAt).toLocaleDateString()}
                   </span>
@@ -110,11 +111,13 @@
             {/each}
           </div>
         {:else}
-          <div class="rounded-lg border border-dashed py-8 text-center text-muted-foreground">
+          <div
+            class="grid h-full place-items-center rounded-lg border border-dashed py-8 text-center text-muted-foreground"
+          >
             No hay comentarios aún para esta etapa.
           </div>
         {/if}
-      </Card.Root>
-    </div>
+      </Card.Content>
+    </Card.Root>
   </div>
 </div>

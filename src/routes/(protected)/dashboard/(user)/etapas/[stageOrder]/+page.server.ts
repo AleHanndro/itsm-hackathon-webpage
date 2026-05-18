@@ -1,49 +1,44 @@
 import { db } from '$lib/server/db/database'
-import { error, redirect } from '@sveltejs/kit'
+import { error } from '@sveltejs/kit'
+import { fail, message, superValidate } from 'sveltekit-superforms'
+import { zod4 } from 'sveltekit-superforms/adapters'
 
 import type { Actions, PageServerLoad } from './$types'
 
-export const load = (async ({ locals, params, parent }) => {
-  const { user } = locals
-  if (!user) {
-    redirect(302, '/login')
-  }
+import { clientAttachmentsSchema, serverAttachmentsSchema } from '../schema'
 
-  const parentData = await parent()
-  if (!parentData.eventStarted) {
-    redirect(302, '/dashboard')
-  }
+export const load = (async ({ locals, params }) => {
+  const stageOrder = Number.parseInt(params.stageOrder, 10)
+  if (Number.isNaN(stageOrder)) return error(404, 'Etapa no encontrada')
 
-  const stageOrder = parseInt(params.stageOrder, 10)
-  if (isNaN(stageOrder)) {
-    error(404, 'Etapa no encontrada')
-  }
-
-  const userTeam = await db.query.teamsUsers.findFirst({
-    where: (t, { eq }) => eq(t.userId, user.id),
-    with: {
-      team: {
-        with: {
-          project: {
-            with: {
-              stagesProjects: {
-                with: {
-                  comments: {
-                    with: {
-                      author: {
-                        columns: { image: true, name: true },
+  const [form, userTeam] = await Promise.all([
+    superValidate(zod4(clientAttachmentsSchema, { defaults: { attachments: [null] } })),
+    db.query.teamsUsers.findFirst({
+      where: (t, { eq }) => eq(t.userId, locals.user?.id as string),
+      with: {
+        team: {
+          with: {
+            project: {
+              with: {
+                stagesProjects: {
+                  with: {
+                    comments: {
+                      with: {
+                        author: {
+                          columns: { name: true },
+                        },
                       },
                     },
+                    stage: true,
                   },
-                  stage: true,
                 },
               },
             },
           },
         },
       },
-    },
-  })
+    }),
+  ])
 
   if (!userTeam || !userTeam.team || !userTeam.team.project) {
     error(403, 'No tienes un proyecto asignado')
@@ -61,6 +56,7 @@ export const load = (async ({ locals, params, parent }) => {
 
   return {
     comments: currentStageProject.comments,
+    form,
     isLeader,
     score: currentStageProject.score,
     stage: currentStageProject.stage,
@@ -69,31 +65,19 @@ export const load = (async ({ locals, params, parent }) => {
 
 export const actions: Actions = {
   default: async ({ locals, request }) => {
-    const { user } = locals
-    if (!user) {
-      error(401, 'Unauthorized')
-    }
+    const form = await superValidate(await request.formData(), zod4(serverAttachmentsSchema))
+    if (!form.valid) return fail(400, { form })
 
     const userTeam = await db.query.teamsUsers.findFirst({
-      where: (t, { eq }) => eq(t.userId, user.id),
+      where: (t, { eq }) => eq(t.userId, locals.user?.id as string),
     })
 
     if (!userTeam || !userTeam.roles.includes('leader')) {
       error(403, 'Solo el líder del equipo puede enviar archivos')
     }
 
-    const formData = await request.formData()
-    const file = formData.get('file') as File | null
+    console.log(form.data.attachments.map((f) => f.name))
 
-    if (!file || file.size === 0) {
-      return { message: 'No se ha subido ningún archivo', success: false }
-    }
-
-    console.log('[STAGE SUBMISSION] File received:')
-    console.log(`- File Name: ${file.name}`)
-    console.log(`- File Type: ${file.type}`)
-    console.log(`- File Size: ${file.size} bytes`)
-
-    return { message: 'Archivo enviado correctamente', success: true }
+    return message(form, { text: 'Archivo enviado correctamente', type: 'error' })
   },
 }
