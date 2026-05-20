@@ -1,14 +1,16 @@
 <script lang="ts">
   import type { User } from '$lib/server/auth'
 
+  import { resolve } from '$app/paths'
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu/index'
   import * as Sidebar from '$lib/components/ui/sidebar/index'
   import { useSidebar } from '$lib/components/ui/sidebar/index'
   import ChevronsUpDownIcon from '@lucide/svelte/icons/chevrons-up-down'
   import LogOutIcon from '@lucide/svelte/icons/log-out'
+  import SettingsIcon from '@lucide/svelte/icons/settings'
 
   import * as Avatar from '../avatar/index'
-  import Button from '../ui/button.svelte'
+  import Button, { buttonVariants } from '../ui/button.svelte'
 
   const { user }: { user: User } = $props()
 
@@ -59,6 +61,21 @@
             {@render userInfo()}
           </div>
         </DropdownMenu.Label>
+        <DropdownMenu.Separator />
+        <DropdownMenu.Group>
+          <DropdownMenu.Item>
+            {#snippet child({ props })}
+              <a
+                {...props}
+                class={buttonVariants({ class: 'w-full justify-start', variant: 'ghost' })}
+                href={resolve('/dashboard/ajustes')}
+              >
+                <SettingsIcon />
+                Ajustes
+              </a>
+            {/snippet}
+          </DropdownMenu.Item>
+        </DropdownMenu.Group>
         <DropdownMenu.Separator />
         <DropdownMenu.Group>
           <form action="/login?/signOut" method="POST">
