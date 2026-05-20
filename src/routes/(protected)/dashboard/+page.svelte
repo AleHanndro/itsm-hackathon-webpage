@@ -18,6 +18,10 @@
   )
 </script>
 
+<svelte:head>
+  <title>Dashboard - Participante</title>
+</svelte:head>
+
 {#if !data.eventStarted}
   <div class="mt-12 mb-12 flex flex-col items-center justify-center space-y-4 text-center">
     <h2 class="text-2xl font-bold text-primary">Evento no iniciado</h2>

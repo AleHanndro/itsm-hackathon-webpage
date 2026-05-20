@@ -63,10 +63,12 @@
         <DropdownMenu.Group>
           <form action="/login?/signOut" method="POST">
             <DropdownMenu.Item class="p-0">
-              <Button class="w-full justify-start" type="submit" variant="ghost">
-                <LogOutIcon />
-                Cerrar Sesión
-              </Button>
+              {#snippet child({ props })}
+                <Button {...props} class="w-full justify-start" type="submit" variant="ghost">
+                  <LogOutIcon />
+                  Cerrar Sesión
+                </Button>
+              {/snippet}
             </DropdownMenu.Item>
           </form>
         </DropdownMenu.Group>

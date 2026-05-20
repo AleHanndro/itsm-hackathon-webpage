@@ -1,5 +1,22 @@
+import type { Roles } from '$lib/permissions'
+
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
+
+export type Role = null | string | undefined
+
+const parseRoles = (role: Role): string[] =>
+  (role ?? '')
+    .split(',')
+    .map((r) => r.trim())
+    .filter(Boolean)
+
+export const hasRole = (userRole: Role, role: Roles): boolean => parseRoles(userRole).includes(role)
+
+export const hasAnyRole = (userRole: Role, roles: Roles[]): boolean => {
+  const userRoles = parseRoles(userRole)
+  return roles.some((role) => userRoles.includes(role))
+}
 
 export const formatDate = (
   date: Date,

@@ -12,7 +12,7 @@ import type { Actions, PageServerLoad } from './$types'
 import { loginSchema } from './schema'
 
 export const load = (async ({ locals }) => {
-  if (locals.user?.role) return redirect(302, getDashboardRoute(locals.user.role))
+  if (locals.user?.role) return redirect(302, getDashboardRoute())
 
   return { form: await superValidate(zod4(loginSchema)) }
 }) satisfies PageServerLoad
@@ -27,15 +27,14 @@ export const actions = {
     }
 
     const isEmail = form.data.identifier.includes('@')
-    let authResponse
 
     try {
       if (isEmail) {
-        authResponse = await auth.api.signInEmail({
+        await auth.api.signInEmail({
           body: { email: form.data.identifier, password: form.data.password },
         })
       } else {
-        authResponse = await auth.api.signInUsername({
+        await auth.api.signInUsername({
           body: { password: form.data.password, username: form.data.identifier },
         })
       }
@@ -58,8 +57,7 @@ export const actions = {
       return message(form, { text: 'Error al iniciar sesión.', type: 'error' }, { status: 500 })
     }
 
-    const role = 'role' in authResponse.user ? authResponse.user.role : null
-    return redirect(302, getDashboardRoute(role))
+    return redirect(302, getDashboardRoute())
   },
 
   signOut: async ({ request }) => {

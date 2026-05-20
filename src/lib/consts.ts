@@ -7,6 +7,16 @@ export const EVENT_START_DATE = new Date('2026-05-29T09:00:00-06:00')
 export const SITE_TITLE = 'ITSM Hackatón'
 export const SITE_DESCRIPTION = 'ITSM Hackatón 2026'
 
+// This does not change on the database, so we can save a query to the database to get the stages
+export const stages: Record<number, string> = {
+  1: 'Scoping',
+  2: 'Problem Exploration',
+  3: 'Solution Development',
+  4: 'Validation & Testing',
+  5: 'Business Model',
+  6: 'Pitch Design',
+}
+
 export const userRolesMap: Record<string, string> = {
   admin: 'Administrador',
   evaluator: 'Evaluador',

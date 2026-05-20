@@ -1,7 +1,6 @@
 <script lang="ts">
   import * as Card from '$lib/components/ui/card/index'
   import * as Form from '$lib/components/ui/form/index'
-  import Input from '$lib/components/ui/input.svelte'
   import TrophyIcon from '@lucide/svelte/icons/trophy'
   import { type Infer, superForm, type SuperValidated } from 'sveltekit-superforms'
   import { zod4Client } from 'sveltekit-superforms/adapters'
@@ -35,14 +34,13 @@
     validators: zod4Client(gradeStageSchema),
   })
 
-  const { allErrors, enhance, form: formData, submitting } = gradeForm
+  const { enhance, form: formData, submitting } = gradeForm
 
   $effect(() => {
     if (team.project?.id) {
       $formData.projectId = team.project.id
     }
     $formData.stageId = stageId
-    $formData.score = initialScore === '' ? 0 : Number(initialScore)
   })
 </script>
 
@@ -68,47 +66,25 @@
     <form class="flex flex-col gap-2" action="?/grade" method="POST" use:enhance>
       <Form.Field name="projectId" form={gradeForm}>
         <Form.Control>
-          {#snippet children({ props })}
-            <input {...props} type="hidden" bind:value={$formData.projectId} />
+          {#snippet children({ props: { name } })}
+            <input {name} readonly type="hidden" bind:value={$formData.projectId} />
           {/snippet}
         </Form.Control>
       </Form.Field>
 
       <Form.Field name="stageId" form={gradeForm}>
         <Form.Control>
-          {#snippet children({ props })}
-            <input {...props} type="hidden" bind:value={$formData.stageId} />
+          {#snippet children({ props: { name } })}
+            <input {name} readonly type="hidden" bind:value={$formData.stageId} />
           {/snippet}
         </Form.Control>
       </Form.Field>
 
-      <div class="flex gap-2">
-        <Form.Field name="score" class="flex-1" form={gradeForm}>
-          <div class="flex items-end gap-2">
-            <Form.Control>
-              {#snippet children({ props })}
-                <div class="flex-1 space-y-2">
-                  <Form.Label class="text-xs font-medium">Calificación</Form.Label>
-                  <Input
-                    {...props}
-                    max="100"
-                    min="0"
-                    placeholder="0 - 100"
-                    required
-                    type="number"
-                    bind:value={$formData.score}
-                  />
-                </div>
-              {/snippet}
-            </Form.Control>
-            <Form.Button
-              disabled={$allErrors.length > 0 || $submitting || $formData.score === initialScore}
-            >
-              Guardar
-            </Form.Button>
-          </div>
-          <Form.FieldErrors />
-        </Form.Field>
+      <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+        <Form.Button disabled={$submitting} formaction="?/deny" variant="destructive">
+          Reprobado
+        </Form.Button>
+        <Form.Button disabled={$submitting} formaction="?/approve">Aprobado</Form.Button>
       </div>
     </form>
   </Card.Content>

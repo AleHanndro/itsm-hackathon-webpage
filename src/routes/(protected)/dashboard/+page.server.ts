@@ -1,4 +1,5 @@
 import { db } from '$lib/server/db/database'
+import { hasAnyRole } from '$lib/server/utils'
 import { redirect } from '@sveltejs/kit'
 
 import type { PageServerLoad } from './$types'
@@ -7,6 +8,11 @@ export const load = (async ({ locals }) => {
   const { user } = locals
   if (!user) {
     redirect(302, '/login')
+  }
+
+  // Staff/admin users should not see the participant dashboard
+  if (hasAnyRole(user.role, ['admin', 'staff', 'evaluator', 'organizer'])) {
+    redirect(302, '/dashboard/evento')
   }
 
   const userTeam = await db.query.teamsUsers.findFirst({
