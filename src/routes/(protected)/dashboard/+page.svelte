@@ -1,6 +1,5 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
-  import Progress from '$lib/components/progress.svelte'
   import Separator from '$lib/components/ui/separator.svelte'
   import { EVENT_START_DATE, userRolesMap } from '$lib/consts'
   import { formatDate } from '$lib/utils'
@@ -8,14 +7,6 @@
   import type { PageData } from './$types'
 
   const { data }: { data: PageData } = $props()
-
-  const progressColor = $derived(
-    data.averageScore >= 90
-      ? 'bg-amber-400'
-      : data.averageScore >= 70
-        ? 'bg-green-500'
-        : 'bg-red-500',
-  )
 </script>
 
 <svelte:head>
@@ -68,13 +59,30 @@
         <div class="space-y-4 rounded-lg border bg-card p-6 text-card-foreground shadow-sm">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold">Progreso General</h3>
-            <span class="text-lg font-bold">{data.averageScore.toFixed(1)}%</span>
+            <div class="flex items-center gap-3 text-sm">
+              <span class="flex items-center gap-1 text-green-600 dark:text-green-400">
+                <span class="font-bold">{data.stages.filter((s) => s.verdict === true).length}</span
+                >
+                Aprobadas
+              </span>
+              <span class="text-muted-foreground">·</span>
+              <span class="flex items-center gap-1 text-muted-foreground">
+                <span class="font-bold">{data.stages.filter((s) => s.verdict === null).length}</span
+                >
+                Pendientes
+              </span>
+              <span class="text-muted-foreground">·</span>
+              <span class="flex items-center gap-1 text-destructive">
+                <span class="font-bold"
+                  >{data.stages.filter((s) => s.verdict === false).length}</span
+                >
+                No Aprobadas
+              </span>
+            </div>
           </div>
 
-          <Progress class="h-3" indicatorClass={progressColor} value={data.averageScore} />
-
           <div class="mt-6">
-            <h4 class="mb-4 font-medium">Calificaciones por Etapa</h4>
+            <h4 class="mb-4 font-medium">Estado por Etapa</h4>
             <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {#each data.stages as stage (stage.name)}
                 <a
@@ -84,7 +92,22 @@
                   })}
                 >
                   <p class="text-sm font-semibold">{stage.name}</p>
-                  <p class="mt-2 text-2xl font-bold">{stage.score}</p>
+                  <p
+                    class={[
+                      'mt-2 text-2xl font-bold',
+                      stage.verdict === null
+                        ? 'text-muted-foreground'
+                        : stage.verdict
+                          ? 'text-green-600 dark:text-green-400'
+                          : 'text-destructive',
+                    ]}
+                  >
+                    {stage.verdict === null
+                      ? 'Pendiente'
+                      : stage.verdict
+                        ? 'Aprobado'
+                        : 'No Aprobado'}
+                  </p>
                 </a>
               {/each}
             </div>
