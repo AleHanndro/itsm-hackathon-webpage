@@ -22,8 +22,24 @@
 
   <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
     {#each data.teamsWithProjects as team (team.id)}
-      {@const score = data.scores.find((s) => s.projectId === team.project?.id)?.score ?? ''}
-      <GradeCard form={data.form} initialScore={score} stageId={data.stage.id} {team} />
+      {@const verdict =
+        data.verdicts.find((s) => s.projectId === team.project?.id)?.verdict ?? null}
+      {@const teamComments = data.stageComments.filter((c) => c.projectId === team.project?.id)}
+      {@const teamAttachments = data.stageAttachments.filter(
+        (a) => a.projectId === team.project?.id,
+      )}
+      <GradeCard
+        addCommentForm={data.addCommentForm}
+        attachments={teamAttachments}
+        comments={teamComments}
+        currentUserId={data.currentUserId}
+        deleteCommentForm={data.deleteCommentForm}
+        editCommentForm={data.editCommentForm}
+        form={data.form}
+        initialVerdict={verdict}
+        stageId={data.stage.id}
+        {team}
+      />
     {:else}
       <p class="col-span-full text-sm text-muted-foreground">
         No hay equipos con proyectos asignados.

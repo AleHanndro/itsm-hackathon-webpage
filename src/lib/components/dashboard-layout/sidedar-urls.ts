@@ -7,6 +7,7 @@ import ClipboardCheckIcon from '@lucide/svelte/icons/clipboard-check'
 import HouseIcon from '@lucide/svelte/icons/house'
 import LayoutGridIcon from '@lucide/svelte/icons/layout-grid'
 import ListTodoIcon from '@lucide/svelte/icons/list-todo'
+import StarIcon from '@lucide/svelte/icons/star'
 import UserIcon from '@lucide/svelte/icons/user'
 import UsersIcon from '@lucide/svelte/icons/users'
 
@@ -72,12 +73,23 @@ const organizerUrls: SidebarGroups = [
   },
 ]
 
-const evaluatorUrls: SidebarGroups = [
-  {
-    group: 'Evaluación',
-    items: getEvaluatorStagesUrls(),
-  },
-]
+const getEvaluatorUrls = (canEvaluateFinal: boolean): SidebarGroups => {
+  const items = getEvaluatorStagesUrls()
+  if (canEvaluateFinal) {
+    items.push({
+      icon: StarIcon,
+      title: 'Evaluación Final',
+      url: '/dashboard/evento/evaluacion-final',
+    })
+  }
+
+  return [
+    {
+      group: 'Evaluación',
+      items,
+    },
+  ]
+}
 
 const adminUrls: SidebarGroups = [
   {
@@ -109,9 +121,10 @@ const userUrls: SidebarGroups = [
   },
 ]
 
-export const getUrls = (role: Role): SidebarGroups => {
-  if (hasRole(role, 'admin')) return staffUrls.concat(adminUrls, organizerUrls, evaluatorUrls)
-  if (hasRole(role, 'evaluator')) return staffUrls.concat(evaluatorUrls)
+export const getUrls = (role: Role, canEvaluateFinal = false): SidebarGroups => {
+  if (hasRole(role, 'admin'))
+    return staffUrls.concat(adminUrls, organizerUrls, getEvaluatorUrls(canEvaluateFinal))
+  if (hasRole(role, 'evaluator')) return staffUrls.concat(getEvaluatorUrls(canEvaluateFinal))
   if (hasRole(role, 'organizer')) return staffUrls.concat(organizerUrls)
   if (hasRole(role, 'staff')) return staffUrls
 
