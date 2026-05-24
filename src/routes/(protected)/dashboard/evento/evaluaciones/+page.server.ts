@@ -8,68 +8,67 @@ export const load = (async () => {
     orderBy: (t, { asc }) => [asc(t.order)],
   })
 
-  // Fetch all teams with projects and their stages_projects scores
   const teamsWithProjects = await db.query.teams.findMany({
     columns: { id: true, name: true },
     where: (t, { isNotNull }) => isNotNull(t.projectId),
     with: {
       project: {
-        columns: { id: true, name: true },
+        columns: { id: true, name: true, score: true },
         with: {
           stagesProjects: {
-            columns: { score: true, stageId: true },
+            columns: { stageId: true, verdict: true },
           },
         },
       },
     },
   })
 
-  // Process data for the dashboard
+  const verdictByProjectStage = new Map<number, Map<number, boolean | null>>()
+  for (const team of teamsWithProjects) {
+    if (!team.project) continue
+    const stageMap = new Map<number, boolean | null>()
+    for (const sp of team.project.stagesProjects) {
+      stageMap.set(sp.stageId, sp.verdict)
+    }
+    verdictByProjectStage.set(team.project.id, stageMap)
+  }
+
   const stageStats = allStages.map((stage) => {
     let approvedCount = 0
     let reprovedCount = 0
-    let highestScore = -1
-    let topTeam = null
+    let pendingCount = 0
 
     for (const team of teamsWithProjects) {
-      const stageScore =
-        team.project?.stagesProjects.find((sp) => sp.stageId === stage.id)?.score ?? 0
+      if (!team.project) continue
 
-      if (stageScore >= 70) {
+      const verdict = verdictByProjectStage.get(team.project.id)?.get(stage.id)
+
+      if (verdict === undefined || verdict === null) {
+        pendingCount++
+      } else if (verdict === true) {
         approvedCount++
       } else {
         reprovedCount++
-      }
-
-      if (stageScore > highestScore) {
-        highestScore = stageScore
-        topTeam = team.name
       }
     }
 
     return {
       ...stage,
       approvedCount,
-      highestScore,
+      pendingCount,
       reprovedCount,
-      topTeam,
     }
   })
 
-  // Calculate overall top teams (average of all stages)
-  const teamAverages = teamsWithProjects.map((team) => {
-    const scores = allStages.map(
-      (stage) => team.project?.stagesProjects.find((sp) => sp.stageId === stage.id)?.score ?? 0,
-    )
-    const average = scores.reduce((a, b) => a + b, 0) / (allStages.length || 1)
-    return {
-      average,
+  // Calculate overall top teams based on final evaluation score
+  const topOverallTeams = teamsWithProjects
+    .filter((team) => team.project !== null)
+    .map((team) => ({
       projectName: team.project?.name,
+      score: team.project?.score,
       teamName: team.name,
-    }
-  })
-
-  const topOverallTeams = teamAverages.sort((a, b) => b.average - a.average).slice(0, 5)
+    }))
+    .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
 
   return {
     stageStats,
