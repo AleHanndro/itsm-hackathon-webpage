@@ -1,4 +1,4 @@
-import { relations, sql } from 'drizzle-orm'
+import { relations } from 'drizzle-orm'
 import { pgTable } from 'drizzle-orm/pg-core'
 import * as t from 'drizzle-orm/pg-core'
 
@@ -21,20 +21,18 @@ export const stagesProjects = pgTable(
       .bigint('project_id', { mode: 'number' })
       .references(() => projects.id, { onDelete: 'cascade' })
       .notNull(),
-    score: t.integer('score').notNull().default(0),
     stageId: t
       .bigint('stage_id', { mode: 'number' })
       .references(() => stages.id, { onDelete: 'cascade' })
       .notNull(),
+    verdict: t.boolean('passed'), // null = pending, true = passed, false = failed
     ...timestamps,
   },
-  (table) => [
-    t.primaryKey({ columns: [table.projectId, table.stageId] }),
-    t.check('stages_projects_scoreCheck', sql`(${table.score} >= 0) AND (${table.score} <= 100)`),
-  ],
+  (table) => [t.primaryKey({ columns: [table.projectId, table.stageId] })],
 )
 
 export const stagesProjectsRelations = relations(stagesProjects, ({ many, one }) => ({
+  attachments: many(attachments),
   comments: many(comments),
   project: one(projects, {
     fields: [stagesProjects.projectId],
@@ -84,6 +82,7 @@ export const commentsRelations = relations(comments, ({ one }) => ({
 export const stagesEvaluators = pgTable(
   'stages_evaluators',
   {
+    canEvaluateFinal: t.boolean('can_evaluate_final').default(false).notNull(),
     stageId: t
       .bigint('stage_id', { mode: 'number' })
       .references(() => stages.id, { onDelete: 'cascade' })
@@ -111,4 +110,41 @@ export const stagesEvaluatorsRelations = relations(stagesEvaluators, ({ one }) =
 export const stagesRelations = relations(stages, ({ many }) => ({
   stagesEvaluators: many(stagesEvaluators),
   stagesProjects: many(stagesProjects),
+}))
+
+export const attachments = pgTable(
+  'attachments',
+  {
+    fileName: t.text('file_name').notNull(),
+    fileSize: t.integer('file_size').notNull(),
+    fileUrl: t.text('file_url').notNull(),
+    id: t.bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    mimeType: t.text('mime_type').notNull(),
+    projectId: t.bigint('project_id', { mode: 'number' }).notNull(),
+    stageId: t.bigint('stage_id', { mode: 'number' }).notNull(),
+    uploadedBy: t.text('uploaded_by').references(() => users.id, { onDelete: 'set null' }),
+    ...timestamps,
+  },
+  (table) => [
+    t
+      .foreignKey({
+        columns: [table.projectId, table.stageId],
+        foreignColumns: [stagesProjects.projectId, stagesProjects.stageId],
+        name: 'attachments_stagesProjects_fk',
+      })
+      .onDelete('cascade'),
+    t.index('attachments_stagesProject_idx').on(table.projectId, table.stageId),
+    t.index('attachments_uploadedBy_idx').on(table.uploadedBy),
+  ],
+)
+
+export const attachmentsRelations = relations(attachments, ({ one }) => ({
+  stagesProject: one(stagesProjects, {
+    fields: [attachments.projectId, attachments.stageId],
+    references: [stagesProjects.projectId, stagesProjects.stageId],
+  }),
+  uploadedBy: one(users, {
+    fields: [attachments.uploadedBy],
+    references: [users.id],
+  }),
 }))
