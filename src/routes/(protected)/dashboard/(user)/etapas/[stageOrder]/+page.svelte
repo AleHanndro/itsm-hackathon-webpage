@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { resolve } from '$app/paths'
   import { page } from '$app/state'
   import * as Card from '$lib/components/ui/card'
+  import PaperclipIcon from '@lucide/svelte/icons/paperclip'
   import { superForm } from 'sveltekit-superforms'
   import { zod4Client } from 'sveltekit-superforms/adapters'
 
@@ -53,12 +55,22 @@
     <div class="space-y-6">
       <Card.Root>
         <Card.Header>
-          <Card.Title>Calificación Actual</Card.Title>
+          <Card.Title>Estado de Evaluación</Card.Title>
         </Card.Header>
         <Card.Content>
-          <div class="flex items-end gap-2">
-            <span class="text-4xl font-bold">{data.score}</span>
-            <span class="mb-1 text-muted-foreground">/ 100</span>
+          <div class="flex items-center gap-2">
+            <span
+              class={[
+                'text-3xl font-bold',
+                data.verdict === null
+                  ? 'text-muted-foreground'
+                  : data.verdict
+                    ? 'text-green-600 dark:text-green-400'
+                    : 'text-destructive',
+              ]}
+            >
+              {data.verdict === null ? 'Pendiente' : data.verdict ? 'Aprobado' : 'No Aprobado'}
+            </span>
           </div>
         </Card.Content>
       </Card.Root>
@@ -70,16 +82,39 @@
             Solo el líder del equipo puede enviar el archivo correspondiente a esta etapa.
           </Card.Description>
         </Card.Header>
-        <Card.Content>
-          {#key currentStageOrder}
-            <UploadAttachmentForm
-              {addSlot}
-              {form}
-              {handleFileInputChange}
-              isLeader={data.isLeader}
-              {removeSlot}
-            />
-          {/key}
+        <Card.Content class="space-y-4">
+          {#if data.attachments && data.attachments.length > 0}
+            <div class="flex flex-col gap-2 rounded-lg border p-4">
+              <h3 class="text-sm font-semibold">Archivos Subidos</h3>
+              <div class="flex flex-col gap-1.5">
+                {#each data.attachments as attachment (attachment.id)}
+                  <a
+                    class="flex items-center gap-2 text-sm text-blue-600 hover:underline dark:text-blue-400"
+                    href={resolve('/(protected)/api/attachments/[id]', {
+                      id: attachment.id.toString(),
+                    })}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <PaperclipIcon class="size-4 shrink-0" />
+                    <span class="truncate">{attachment.fileName}</span>
+                  </a>
+                {/each}
+              </div>
+            </div>
+          {/if}
+
+          {#if data.verdict === null}
+            {#key currentStageOrder}
+              <UploadAttachmentForm
+                {addSlot}
+                {form}
+                {handleFileInputChange}
+                isLeader={data.isLeader}
+                {removeSlot}
+              />
+            {/key}
+          {/if}
         </Card.Content>
       </Card.Root>
     </div>

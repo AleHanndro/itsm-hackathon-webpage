@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { page } from '$app/state'
   import Button from '$lib/components/ui/button.svelte'
   import * as Card from '$lib/components/ui/card/index'
   import * as Form from '$lib/components/ui/form/index'
@@ -24,7 +25,7 @@
 
   // svelte-ignore state_referenced_locally
   const { allErrors, enhance, form: formData, submitting } = form
-  const isButtonDisabled = $derived(!isLeader || $submitting)
+  const isButtonDisabled = $derived(!isLeader || !page.data.eventStarted || $submitting)
 </script>
 
 <form class="space-y-4" enctype="multipart/form-data" method="POST" use:enhance>
@@ -41,7 +42,7 @@
               <InputGroup.Input
                 {...props}
                 accept=".pdf,.zip,.rar"
-                disabled={!isLeader || $submitting}
+                disabled={!isLeader || !page.data.eventStarted}
                 onchange={(e) => handleFileInputChange(e, i)}
                 type="file"
               />
