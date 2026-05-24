@@ -74,6 +74,7 @@
   "dependencies": {
     "@content-collections/cli": "0.1.9",
     "@m4r1vs/mdsvex-enhanced-images": "1.1.1",
+    "@supabase/supabase-js": "2.106.1",
     "@sveltejs/enhanced-img": "0.10.4",
     "better-auth": "1.6.9",
     "dotenv": "17.4.2",
