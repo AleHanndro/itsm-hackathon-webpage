@@ -5,10 +5,8 @@ import { redirect } from '@sveltejs/kit'
 import type { PageServerLoad } from './$types'
 
 export const load = (async ({ locals }) => {
-  const { user } = locals
-  if (!user) {
-    redirect(302, '/login')
-  }
+  // On /(protected) routes, locals.user is guaranteed by src/hooks.server.ts
+  const user = locals.user as NonNullable<typeof locals.user>
 
   // Staff/admin users should not see the participant dashboard
   if (hasAnyRole(user.role, ['admin', 'staff', 'evaluator', 'organizer'])) {
