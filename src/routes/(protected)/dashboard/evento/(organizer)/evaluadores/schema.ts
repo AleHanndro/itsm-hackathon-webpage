@@ -1,12 +1,22 @@
 import { z } from 'zod'
 
 export const assignEvaluatorSchema = z.object({
-  stageId: z.number().int().positive(),
+  canEvaluateFinal: z.boolean().default(false),
+  stageId: z.coerce.number().int().positive(),
   userId: z.string().min(1),
 })
 
 export const removeEvaluatorSchema = z.object({
-  stageId: z.number().int().positive(),
+  stageId: z.coerce.number().int().positive(),
+  userId: z.string().min(1),
+})
+
+export const updateFinalEvalSchema = z.object({
+  canEvaluateFinal: z
+    .string()
+    .transform((v) => v === 'true')
+    .or(z.boolean()),
+  stageId: z.coerce.number().int().positive(),
   userId: z.string().min(1),
 })
 
@@ -18,3 +28,4 @@ export interface Member {
 }
 
 export type RemoveEvaluatorSchema = typeof removeEvaluatorSchema
+export type UpdateFinalEvalSchema = typeof updateFinalEvalSchema
