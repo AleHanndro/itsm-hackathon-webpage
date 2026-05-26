@@ -13,8 +13,10 @@ export const addMemberSchema = z.object({
   userId: z.string().min(1, 'Debes seleccionar un usuario de la lista'),
 })
 
-export const renameTeamSchema = z.object({
+export const editTeamSchema = z.object({
+  leaderId: z.string().optional(),
   name: z.string().min(3, 'El nombre del equipo debe tener al menos 3 caracteres'),
+  speakerId: z.string().optional(),
   teamId: z.coerce.number().int(),
 })
 
@@ -30,9 +32,9 @@ export const removeMemberSchema = z.object({
 export type AddMemberSchema = typeof addMemberSchema
 export type CreateTeamSchema = typeof createTeamSchema
 export type DeleteTeamSchema = typeof deleteTeamSchema
+export type EditTeamSchema = typeof editTeamSchema
 export type Member = Pick<typeof users.$inferSelect, 'email' | 'id' | 'name'>
 export type RemoveMemberSchema = typeof removeMemberSchema
-export type RenameTeamSchema = typeof renameTeamSchema
 /** `leaderId` is no longer on the team row — leadership is tracked via `teams_users.roles`. */
 export type Team = Omit<typeof teams.$inferSelect, 'createdAt' | 'updatedAt'>
 export interface TeamMember {

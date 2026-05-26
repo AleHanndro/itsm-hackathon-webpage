@@ -14,12 +14,12 @@
   const {
     children,
     requestDelete,
-    requestEditName,
+    requestEditTeam,
     team,
   }: {
     children: Snippet
     requestDelete: (type: 'member' | 'team', data: Record<string, number | string>) => void
-    requestEditName: (teamId: number, teamName: string) => void
+    requestEditTeam: (team: TeamWithMembers) => void
     team: TeamWithMembers
   } = $props()
 </script>
@@ -33,7 +33,7 @@
     <div class="flex items-center gap-1">
       <Button
         class="size-8 text-muted-foreground"
-        onclick={() => requestEditName(team.id, team.name)}
+        onclick={() => requestEditTeam(team)}
         size="icon"
         variant="ghost"
       >
@@ -78,7 +78,7 @@
 
         {#if !isLeader}
           <Button
-            class="size-8 text-destructive transition-opacity group-hover:opacity-100 focus-within:opacity-100 hover:bg-destructive/10 sm:opacity-0"
+            class="size-8 text-destructive opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 hover:bg-destructive/10"
             onclick={() => requestDelete('member', { teamId: team.id, userId: member.user.id })}
             size="icon"
             variant="ghost"

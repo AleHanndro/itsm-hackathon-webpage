@@ -2,7 +2,7 @@ import { teams, teamsUsers } from '$lib/schema/teams'
 import { db } from '$lib/server/db/database'
 import { dbTry } from '$lib/server/db/errors'
 import { hasAnyRole } from '$lib/server/utils'
-import { and, count, eq } from 'drizzle-orm'
+import { and, count, eq, sql } from 'drizzle-orm'
 import { fail, message, setError, superValidate } from 'sveltekit-superforms'
 import { zod4 } from 'sveltekit-superforms/adapters'
 
@@ -12,15 +12,15 @@ import {
   addMemberSchema,
   createTeamSchema,
   deleteTeamSchema,
+  editTeamSchema,
   removeMemberSchema,
-  renameTeamSchema,
 } from './schema'
 
 export const load = (async () => {
-  const [createTeamForm, addMemberForm, renameTeamForm] = await Promise.all([
+  const [createTeamForm, addMemberForm, editTeamForm] = await Promise.all([
     superValidate(zod4(createTeamSchema)),
     superValidate(zod4(addMemberSchema)),
-    superValidate(zod4(renameTeamSchema)),
+    superValidate(zod4(editTeamSchema)),
   ])
   const availableUsers = await db.query.users.findMany({
     columns: { email: true, id: true, name: true },
@@ -48,7 +48,7 @@ export const load = (async () => {
   return {
     addMemberForm,
     createTeamForm,
-    renameTeamForm,
+    editTeamForm,
     teams,
     users: availableUsers,
   }
@@ -186,6 +186,68 @@ export const actions = {
 
     return message(form, { text: 'Equipo eliminado exitosamente', type: 'success' })
   },
+  editTeam: async ({ locals, request }) => {
+    if (!hasAnyRole(locals.user?.role, ['admin', 'organizer']))
+      return fail(403, { message: 'No tienes permiso para realizar esta acción' })
+
+    const form = await superValidate(request, zod4(editTeamSchema))
+    if (!form.valid) return fail(400, { form })
+
+    const { leaderId, name, speakerId, teamId } = form.data
+
+    const { error: editError } = await dbTry(() =>
+      db.transaction(async (tx) => {
+        // 1. Rename the team
+        await tx.update(teams).set({ name }).where(eq(teams.id, teamId))
+
+        // 2. Strip all leader/speaker roles from every member of this team
+        await tx
+          .update(teamsUsers)
+          .set({ roles: sql`array_remove(array_remove(${teamsUsers.roles}, 'leader'), 'speaker')` })
+          .where(eq(teamsUsers.teamId, teamId))
+
+        // 3. Build the new role assignments: userId → roles[]
+        const roleMap = new Map<string, string[]>()
+
+        if (leaderId && leaderId.trim().length > 0) {
+          roleMap.set(leaderId, ['leader'])
+        }
+        if (speakerId && speakerId.trim().length > 0) {
+          const existing = roleMap.get(speakerId)
+          if (existing) {
+            existing.push('speaker')
+          } else {
+            roleMap.set(speakerId, ['speaker'])
+          }
+        }
+
+        // 4. Apply new roles for each affected member
+        for (const [userId, roles] of roleMap) {
+          await tx
+            .update(teamsUsers)
+            .set({ roles })
+            .where(and(eq(teamsUsers.teamId, teamId), eq(teamsUsers.userId, userId)))
+        }
+      }),
+    )
+
+    if (editError) {
+      switch (editError.kind) {
+        case 'unique_violation':
+          return setError(form, 'name', 'Ya existe un equipo con ese nombre.')
+
+        case 'unknown':
+          console.error('[editTeam]', editError.cause)
+          return message(
+            form,
+            { text: 'Error inesperado al editar el equipo.', type: 'error' },
+            { status: 500 },
+          )
+      }
+    }
+
+    return message(form, { text: 'Equipo actualizado exitosamente', type: 'success' })
+  },
   removeMember: async ({ locals, request }) => {
     if (!hasAnyRole(locals.user?.role, ['admin', 'organizer']))
       return fail(403, { message: 'No tienes permiso para realizar esta acción' })
@@ -224,33 +286,5 @@ export const actions = {
     }
 
     return message(form, { text: 'Miembro removido exitosamente', type: 'success' })
-  },
-  renameTeam: async ({ locals, request }) => {
-    if (!hasAnyRole(locals.user?.role, ['admin', 'organizer']))
-      return fail(403, { message: 'No tienes permiso para realizar esta acción' })
-
-    const form = await superValidate(request, zod4(renameTeamSchema))
-    if (!form.valid) return fail(400, { form })
-
-    const { error: renameError } = await dbTry(() =>
-      db.update(teams).set({ name: form.data.name }).where(eq(teams.id, form.data.teamId)),
-    )
-
-    if (renameError) {
-      switch (renameError.kind) {
-        case 'unique_violation':
-          return setError(form, 'name', 'Ya existe un equipo con ese nombre.')
-
-        case 'unknown':
-          console.error('[renameTeam]', renameError.cause)
-          return message(
-            form,
-            { text: 'Error inesperado al renombrar el equipo.', type: 'error' },
-            { status: 500 },
-          )
-      }
-    }
-
-    return message(form, { text: 'Equipo renombrado exitosamente', type: 'success' })
   },
 } satisfies Actions
