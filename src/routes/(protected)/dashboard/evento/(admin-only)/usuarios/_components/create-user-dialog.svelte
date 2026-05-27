@@ -53,12 +53,19 @@
         },
       }}
     >
+      <!-- Hidden fields auto-generated on input -->
+      <input name="username" type="hidden" bind:value={$formData.username} />
+      <input name="displayUsername" type="hidden" bind:value={$formData.displayUsername} />
+
       <Form.Field name="name" {form}>
         <Form.Control>
           {#snippet children({ props })}
             <Form.Label>Nombre completo</Form.Label>
             <Input
               {...props}
+              oninput={(e) => {
+                $formData.displayUsername = e.currentTarget.value
+              }}
               placeholder="Ej. Juan Pérez"
               type="text"
               bind:value={$formData.name}
@@ -71,16 +78,26 @@
       <Form.Field name="email" {form}>
         <Form.Control>
           {#snippet children({ props })}
-            <Form.Label>Correo electrónico</Form.Label>
+            <Form.Label>Correo electrónico institucional</Form.Label>
             <Input
               {...props}
-              placeholder="usuario@ejemplo.com"
+              oninput={(e) => {
+                $formData.username = e.currentTarget.value.replace(/[^0-9]/g, '').slice(0, 8)
+              }}
+              placeholder="victor.22070063@itsmotul.edu.mx"
               type="email"
               bind:value={$formData.email}
             />
           {/snippet}
         </Form.Control>
         <Form.FieldErrors />
+        {#if $formData.username}
+          <p class="text-xs text-muted-foreground">
+            Nombre de usuario generado: <span class="font-mono font-medium"
+              >{$formData.username}</span
+            >
+          </p>
+        {/if}
       </Form.Field>
 
       <Form.Field name="password" {form}>
@@ -103,11 +120,11 @@
           {#snippet children({ props })}
             <Form.Label>Rol</Form.Label>
             <NativeSelect.Root {...props} class="w-full" bind:value={$formData.role}>
-              <NativeSelect.Option value="user">Usuario</NativeSelect.Option>
+              <NativeSelect.Option value="user">Participante</NativeSelect.Option>
               <NativeSelect.Option value="staff">Staff</NativeSelect.Option>
-              <NativeSelect.Option value="admin">Administrador</NativeSelect.Option>
               <NativeSelect.Option value="evaluator">Evaluador</NativeSelect.Option>
               <NativeSelect.Option value="organizer">Organizador</NativeSelect.Option>
+              <NativeSelect.Option value="admin">Administrador</NativeSelect.Option>
             </NativeSelect.Root>
           {/snippet}
         </Form.Control>
