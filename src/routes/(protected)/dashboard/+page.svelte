@@ -14,7 +14,7 @@
 </svelte:head>
 
 {#if !data.eventStarted}
-  <div class="mt-12 mb-12 flex flex-col items-center justify-center space-y-4 text-center">
+  <div class="mt-12 mb-12 flex flex-col items-center justify-center space-y-4 p-4 text-center">
     <h2 class="text-2xl font-bold text-primary">Evento no iniciado</h2>
     <p class="max-w-md text-muted-foreground">
       El evento aún no ha comenzado. La fecha de inicio está programada para el
@@ -24,7 +24,7 @@
 {/if}
 
 {#if data.teamInfo}
-  <div class="mt-8 space-y-6">
+  <div class="mt-8 space-y-6 p-4">
     <div>
       <h2 class="text-xl font-bold">Tu Equipo: {data.teamInfo.name}</h2>
       <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

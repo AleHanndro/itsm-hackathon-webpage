@@ -45,7 +45,7 @@
   }
 </script>
 
-<div class="space-y-6">
+<div class="space-y-6 p-4">
   <div>
     <h1 class="text-3xl font-bold tracking-tight">Etapa {data.stage.order}: {data.stage.name}</h1>
     <p class="mt-2 text-muted-foreground">{data.stage.description || 'Sin descripción'}</p>

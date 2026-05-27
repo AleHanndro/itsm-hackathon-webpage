@@ -41,7 +41,7 @@
   </Button>
 {/snippet}
 
-<form action="?/changePassword" method="POST" use:enhance>
+<form class="space-y-4" action="?/changePassword" method="POST" use:enhance>
   <Form.Field name="currentPassword" {form}>
     <Form.Control>
       {#snippet children({ props })}

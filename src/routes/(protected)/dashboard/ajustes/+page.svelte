@@ -8,13 +8,16 @@
   const { data }: { data: PageData } = $props()
 </script>
 
-<Card.Root>
-  <Card.Header>
-    <Card.Title>Ajustes</Card.Title>
-    <Card.Description>Cambia tu contraseña y otras configuraciones de tu cuenta.</Card.Description>
-  </Card.Header>
+<div class="p-4">
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>Ajustes</Card.Title>
+      <Card.Description>Cambia tu contraseña y otras configuraciones de tu cuenta.</Card.Description
+      >
+    </Card.Header>
 
-  <Card.Content>
-    <ChangePasswordForm form={data.form} />
-  </Card.Content>
-</Card.Root>
+    <Card.Content>
+      <ChangePasswordForm form={data.form} />
+    </Card.Content>
+  </Card.Root>
+</div>
