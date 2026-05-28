@@ -1,26 +1,15 @@
 <script lang="ts">
   import type { Snippet } from 'svelte'
 
+  import { getUrls } from '$lib/components/dashboard-layout/sidedar-urls'
   import DashboardWrapper from '$lib/components/dashboard-layout/wrapper.svelte'
 
   import type { LayoutData } from './$types'
 
-  import { getSidebarGroups } from './dashboard-config'
-
   const { children, data }: { children: Snippet; data: LayoutData } = $props()
 
-  // svelte-ignore state_referenced_locally
-  const items = getSidebarGroups({
-    isAdmin: data.isAdmin,
-    isEvaluator: data.isEvaluator,
-    isOrganizer: data.user.role === 'organizer',
-    stages: data.stages,
-  })
+  const items = $derived(getUrls(data.user.role, data.canEvaluateFinal))
 </script>
-
-<svelte:head>
-  <title>Dashboard - Staff</title>
-</svelte:head>
 
 <DashboardWrapper {items} user={data.user}>
   {@render children()}

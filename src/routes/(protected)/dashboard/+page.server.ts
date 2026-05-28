@@ -1,12 +1,16 @@
 import { db } from '$lib/server/db/database'
+import { hasAnyRole } from '$lib/server/utils'
 import { redirect } from '@sveltejs/kit'
 
 import type { PageServerLoad } from './$types'
 
 export const load = (async ({ locals }) => {
-  const { user } = locals
-  if (!user) {
-    redirect(302, '/login')
+  // On /(protected) routes, locals.user is guaranteed by src/hooks.server.ts
+  const user = locals.user as NonNullable<typeof locals.user>
+
+  // Staff/admin users should not see the participant dashboard
+  if (hasAnyRole(user.role, ['admin', 'staff', 'evaluator', 'organizer'])) {
+    redirect(302, '/dashboard/evento')
   }
 
   const userTeam = await db.query.teamsUsers.findFirst({
@@ -37,8 +41,7 @@ export const load = (async ({ locals }) => {
 
   let teamInfo = null
   let projectInfo = null
-  let stages: { id: number; name: string; order: number; score: number }[] = []
-  let averageScore = 0
+  let stages: { id: number; name: string; order: number; verdict: boolean | null }[] = []
 
   if (userTeam?.team) {
     teamInfo = {
@@ -62,16 +65,12 @@ export const load = (async ({ locals }) => {
         id: sp.stage.id,
         name: sp.stage.name,
         order: sp.stage.order,
-        score: sp.score,
+        verdict: sp.verdict,
       }))
 
       stages.sort((a, b) => a.order - b.order)
-
-      if (stages.length > 0) {
-        averageScore = stages.reduce((acc, curr) => acc + curr.score, 0) / stages.length
-      }
     }
   }
 
-  return { averageScore, projectInfo, stages, teamInfo }
+  return { projectInfo, stages, teamInfo }
 }) satisfies PageServerLoad

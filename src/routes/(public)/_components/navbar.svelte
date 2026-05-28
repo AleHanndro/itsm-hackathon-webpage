@@ -12,6 +12,7 @@
   import { page } from '$app/state'
   import { buttonVariants } from '$lib/components/ui/button.svelte'
   import * as Sheet from '$lib/components/ui/sheet'
+  import { cn } from '$lib/utils'
   import MenuIcon from '@lucide/svelte/icons/menu'
 
   const { navLinks }: { navLinks: NavLink[] } = $props()
@@ -41,6 +42,10 @@
     {@render links('hover:text-accent transition-colors')}
   </nav>
 
+  <div class="hidden items-center md:flex">
+    <a class={buttonVariants({ variant: 'default' })} href={resolve('/dashboard')}> Dashboard </a>
+  </div>
+
   <div class="md:hidden">
     <Sheet.Root>
       <Sheet.Trigger
@@ -52,6 +57,14 @@
       <Sheet.Content class="border-l border-line bg-card font-display font-medium" side="right">
         <nav class="flex flex-col gap-6 pt-10">
           {@render links('border-b border-border px-10 pb-2 uppercase tracking-widest')}
+          <div class="px-10 pt-2">
+            <a
+              class={cn(buttonVariants({ variant: 'default' }), 'w-full')}
+              href={resolve('/dashboard')}
+            >
+              Dashboard
+            </a>
+          </div>
         </nav>
       </Sheet.Content>
     </Sheet.Root>

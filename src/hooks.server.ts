@@ -10,13 +10,13 @@ import { svelteKitHandler } from 'better-auth/svelte-kit'
 
 const protected_routes = {
   admin: '/(admin-only)',
+  evaluator: '/(evaluator)',
   organizer: '/(organizer)',
   protected: '/(protected)',
-  staff: '/(staff)',
 } as const
 
 const redirect = ({
-  route = '/dashboard/evento',
+  route = '/dashboard',
   status = 303,
 }: {
   route?: Pathname
@@ -41,13 +41,16 @@ const handleAuthorization: Handle = ({ event, resolve }) => {
   if (routeId?.includes(protected_routes.admin) && user?.role !== 'admin') return redirect()
 
   if (
+    routeId?.includes(protected_routes.evaluator) &&
+    !hasAnyRole(user?.role, ['admin', 'evaluator'])
+  )
+    return redirect({ route: '/dashboard/evento' })
+
+  if (
     routeId?.includes(protected_routes.organizer) &&
     !hasAnyRole(user?.role, ['admin', 'organizer'])
   )
     return redirect()
-
-  // admin or staff users cannot access user routes
-  if (routeId?.includes('/(user)') && user?.role !== 'user') return redirect()
 
   return resolve(event)
 }

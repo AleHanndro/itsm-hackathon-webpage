@@ -1,20 +1,13 @@
-import { db } from '$lib/server/db/database'
-import { isUserAuthorized } from '$lib/server/utils'
+import { hasAnyRole } from '$lib/server/utils'
+import { redirect } from '@sveltejs/kit'
 
 import type { LayoutServerLoad } from './$types'
 
-export const load = (async ({ locals }) => {
-  const { approved, authorized, eventStarted } = await isUserAuthorized(locals.user?.email)
-
-  const stages = await db.query.stages.findMany({
-    columns: { name: true, order: true },
-    orderBy: (stages, { asc }) => [asc(stages.order)],
-  })
-
-  return {
-    approved,
-    eventStarted,
-    isAuthorized: authorized,
-    stages,
+export const load = (({ locals }) => {
+  // Only regular users (participants) can access these routes
+  if (hasAnyRole(locals.user?.role, ['admin', 'staff', 'evaluator', 'organizer'])) {
+    redirect(302, '/dashboard/evento')
   }
+
+  return {}
 }) satisfies LayoutServerLoad

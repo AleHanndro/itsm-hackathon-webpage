@@ -1,12 +1,7 @@
-import { redirect } from '@sveltejs/kit'
-
 import type { LayoutServerLoad } from './$types'
 
 export const load = (({ locals }) => {
-  // despite checking the session in the handle hook, check it here just to be sure
-  if (!locals.user || !locals.session) {
-    redirect(302, '/login')
-  }
-
-  return { user: locals.user }
+  // locals.user is guaranteed non-null for /(protected) routes by src/hooks.server.ts
+  const user = locals.user as NonNullable<typeof locals.user>
+  return { user }
 }) satisfies LayoutServerLoad

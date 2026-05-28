@@ -2,8 +2,8 @@
   import * as Card from '$lib/components/ui/card'
   import * as Table from '$lib/components/ui/table'
   import CircleCheckIcon from '@lucide/svelte/icons/circle-check'
+  import CircleDashedIcon from '@lucide/svelte/icons/circle-dashed'
   import CircleXIcon from '@lucide/svelte/icons/circle-x'
-  import TrophyIcon from '@lucide/svelte/icons/trophy'
 
   import type { PageData } from './$types'
 
@@ -40,17 +40,12 @@
               </div>
               <span class="font-bold">{stat.reprovedCount}</span>
             </div>
-            <div class="mt-2 rounded-md bg-secondary p-3">
-              <div class="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                <TrophyIcon class="h-4 w-4 text-yellow-500" />
-                Mejor Equipo
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <CircleDashedIcon class="h-5 w-5 text-yellow-500" />
+                <span class="text-sm font-medium">Pendientes</span>
               </div>
-              <div class="mt-1 flex items-center justify-between">
-                <span class="font-semibold">{stat.topTeam || 'N/A'}</span>
-                <span class="text-sm"
-                  >{stat.highestScore >= 0 ? `${stat.highestScore}/100` : '-'}</span
-                >
-              </div>
+              <span class="font-bold">{stat.pendingCount}</span>
             </div>
           </div>
         </Card.Content>
@@ -78,12 +73,12 @@
               <Table.Cell class="font-medium">#{index + 1}</Table.Cell>
               <Table.Cell>{team.teamName}</Table.Cell>
               <Table.Cell>{team.projectName || 'Sin proyecto'}</Table.Cell>
-              <Table.Cell class="text-right font-bold">{team.average.toFixed(1)}</Table.Cell>
+              <Table.Cell class="text-right font-bold">{team.score}</Table.Cell>
             </Table.Row>
           {:else}
             <Table.Row>
               <Table.Cell class="text-center text-muted-foreground" colspan={4}>
-                No hay equipos con proyectos asignados.
+                No hay evaluaciones finales registradas todavía.
               </Table.Cell>
             </Table.Row>
           {/each}

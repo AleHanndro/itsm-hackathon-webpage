@@ -7,7 +7,7 @@
   import AddMemberDialog from './_components/add-member-dialog.svelte'
   import ConfirmDelete from './_components/confirm-delete.svelte'
   import CreateTeamDialog from './_components/create-team-dialog.svelte'
-  import EditTeamName from './_components/edit-team-name.svelte'
+  import EditTeam from './_components/edit-team.svelte'
   import TeamCard from './_components/team-card.svelte'
 
   const { data }: { data: PageData } = $props()
@@ -28,17 +28,15 @@
     title: '',
   })
 
-  let editTeamNameState = $state({
+  let editTeamState = $state({
     open: false,
-    teamId: null as null | number,
-    teamName: '',
+    team: null as null | PageData['teams'][number],
   })
 
-  const requestEditName = (teamId: number, teamName: string) => {
-    editTeamNameState = {
+  const requestEditTeam = (team: PageData['teams'][number]) => {
+    editTeamState = {
       open: true,
-      teamId,
-      teamName,
+      team,
     }
   }
 
@@ -79,7 +77,7 @@
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
       {#each data.teams as team (team.id)}
-        <TeamCard {requestDelete} {requestEditName} {team}>
+        <TeamCard {requestDelete} {requestEditTeam} {team}>
           <div class="flex w-full flex-col gap-2">
             <Button
               class="w-full gap-2"
@@ -125,9 +123,4 @@
   bind:open={confirmDeleteState.open}
 />
 
-<EditTeamName
-  form={data.renameTeamForm}
-  teamId={editTeamNameState.teamId}
-  teamName={editTeamNameState.teamName}
-  bind:open={editTeamNameState.open}
-/>
+<EditTeam form={data.editTeamForm} team={editTeamState.team} bind:open={editTeamState.open} />

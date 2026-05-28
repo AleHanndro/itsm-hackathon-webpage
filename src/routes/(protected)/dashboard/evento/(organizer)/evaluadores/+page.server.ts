@@ -8,12 +8,13 @@ import { zod4 } from 'sveltekit-superforms/adapters'
 
 import type { Actions, PageServerLoad } from './$types'
 
-import { assignEvaluatorSchema, removeEvaluatorSchema } from './schema'
+import { assignEvaluatorSchema, removeEvaluatorSchema, updateFinalEvalSchema } from './schema'
 
 export const load = (async () => {
-  const [assignForm, removeForm] = await Promise.all([
+  const [assignForm, removeForm, updateFinalEvalForm] = await Promise.all([
     superValidate(zod4(assignEvaluatorSchema)),
     superValidate(zod4(removeEvaluatorSchema)),
+    superValidate(zod4(updateFinalEvalSchema)),
   ])
 
   const availableEvaluators = await db.query.users.findMany({
@@ -25,6 +26,7 @@ export const load = (async () => {
     orderBy: (t, { asc }) => [asc(t.order)],
     with: {
       stagesEvaluators: {
+        columns: { canEvaluateFinal: true },
         with: {
           user: {
             columns: { email: true, id: true, name: true },
@@ -34,7 +36,7 @@ export const load = (async () => {
     },
   })
 
-  return { assignForm, availableEvaluators, removeForm, stages }
+  return { assignForm, availableEvaluators, removeForm, stages, updateFinalEvalForm }
 }) satisfies PageServerLoad
 
 export const actions = {
@@ -45,9 +47,11 @@ export const actions = {
     const form = await superValidate(request, zod4(assignEvaluatorSchema))
     if (!form.valid) return fail(400, { form })
 
-    const { stageId, userId } = form.data
+    const { canEvaluateFinal, stageId, userId } = form.data
 
-    const { error } = await dbTry(() => db.insert(stagesEvaluators).values({ stageId, userId }))
+    const { error } = await dbTry(() =>
+      db.insert(stagesEvaluators).values({ canEvaluateFinal, stageId, userId }),
+    )
 
     if (error) {
       if (error.kind === 'unique_violation') {
@@ -92,5 +96,37 @@ export const actions = {
     }
 
     return message(form, { text: 'Evaluador removido exitosamente', type: 'success' })
+  },
+  updateFinalEval: async ({ locals, request }) => {
+    if (!hasAnyRole(locals.user?.role, ['admin', 'organizer']))
+      return fail(403, { message: 'No tienes permiso para realizar esta acción' })
+
+    const form = await superValidate(request, zod4(updateFinalEvalSchema))
+    if (!form.valid) return fail(400, { form })
+
+    const { canEvaluateFinal, stageId, userId } = form.data
+
+    const { error } = await dbTry(() =>
+      db
+        .update(stagesEvaluators)
+        .set({ canEvaluateFinal })
+        .where(and(eq(stagesEvaluators.stageId, stageId), eq(stagesEvaluators.userId, userId))),
+    )
+
+    if (error) {
+      console.error('[updateFinalEval]', error)
+      return message(
+        form,
+        { text: 'Error inesperado al actualizar el permiso de evaluación final', type: 'error' },
+        { status: 500 },
+      )
+    }
+
+    return message(form, {
+      text: canEvaluateFinal
+        ? 'Permiso de evaluación final activado'
+        : 'Permiso de evaluación final desactivado',
+      type: 'success',
+    })
   },
 } satisfies Actions

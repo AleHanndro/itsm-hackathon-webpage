@@ -4,26 +4,22 @@
   import * as Avatar from '$lib/components/avatar/index'
   import Button from '$lib/components/ui/button.svelte'
   import * as Card from '$lib/components/ui/card/index'
+  import { userRolesMap } from '$lib/consts'
   import PencilLineIcon from '@lucide/svelte/icons/pencil-line'
   import TrashIcon from '@lucide/svelte/icons/trash-2'
   import XIcon from '@lucide/svelte/icons/x'
 
   import type { TeamWithMembers } from '../schema'
 
-  const ROLE_LABELS: Record<string, string> = {
-    leader: 'Líder',
-    speaker: 'Orador',
-  }
-
   const {
     children,
     requestDelete,
-    requestEditName,
+    requestEditTeam,
     team,
   }: {
     children: Snippet
     requestDelete: (type: 'member' | 'team', data: Record<string, number | string>) => void
-    requestEditName: (teamId: number, teamName: string) => void
+    requestEditTeam: (team: TeamWithMembers) => void
     team: TeamWithMembers
   } = $props()
 </script>
@@ -37,7 +33,7 @@
     <div class="flex items-center gap-1">
       <Button
         class="size-8 text-muted-foreground"
-        onclick={() => requestEditName(team.id, team.name)}
+        onclick={() => requestEditTeam(team)}
         size="icon"
         variant="ghost"
       >
@@ -73,7 +69,7 @@
             <div class="flex items-center gap-2">
               <span class="text-sm font-medium">{member.user.name}</span>
               {#each member.roles as role (role)}
-                <span class="text-xs text-accent-2">{ROLE_LABELS[role] ?? role}</span>
+                <span class="text-xs text-accent-2">{userRolesMap[role] ?? role}</span>
               {/each}
             </div>
             <span class="text-sm text-muted-foreground">{member.user.email}</span>
@@ -82,7 +78,7 @@
 
         {#if !isLeader}
           <Button
-            class="size-8 text-destructive transition-opacity group-hover:opacity-100 focus-within:opacity-100 hover:bg-destructive/10 sm:opacity-0"
+            class="size-8 text-destructive opacity-0 transition-opacity group-hover:opacity-100 focus-within:opacity-100 hover:bg-destructive/10"
             onclick={() => requestDelete('member', { teamId: team.id, userId: member.user.id })}
             size="icon"
             variant="ghost"
