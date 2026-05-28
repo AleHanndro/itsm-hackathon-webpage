@@ -73,7 +73,9 @@
               <Table.Cell class="font-medium">#{index + 1}</Table.Cell>
               <Table.Cell>{team.teamName}</Table.Cell>
               <Table.Cell>{team.projectName || 'Sin proyecto'}</Table.Cell>
-              <Table.Cell class="text-right font-bold">{team.score}</Table.Cell>
+              <Table.Cell class="text-right font-bold">
+                {team.score != null ? `${team.score.toFixed(1)} / 100` : '—'}
+              </Table.Cell>
             </Table.Row>
           {:else}
             <Table.Row>

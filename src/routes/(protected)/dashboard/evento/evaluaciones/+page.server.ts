@@ -2,6 +2,20 @@ import { db } from '$lib/server/db/database'
 
 import type { PageServerLoad } from './$types'
 
+import { requirementsList } from '../(evaluator)/evaluacion-final/schema'
+
+/** Calculates the weighted total (out of 100) from an array of final score rows. */
+function computeWeightedTotal(scores: { criterionId: string; score: number }[]): null | number {
+  if (scores.length === 0) return null
+  const scoreMap = new Map(scores.map((s) => [s.criterionId, s.score]))
+  let total = 0
+  for (const req of requirementsList) {
+    const s = scoreMap.get(req.id) ?? 0
+    total += s * (req.weight / req.maxScore)
+  }
+  return Math.round(total * 10) / 10
+}
+
 export const load = (async () => {
   // Fetch all stages
   const allStages = await db.query.stages.findMany({
@@ -13,7 +27,7 @@ export const load = (async () => {
     where: (t, { isNotNull }) => isNotNull(t.projectId),
     with: {
       project: {
-        columns: { id: true, name: true, score: true },
+        columns: { id: true, name: true },
         with: {
           stagesProjects: {
             columns: { stageId: true, verdict: true },
@@ -60,14 +74,30 @@ export const load = (async () => {
     }
   })
 
-  // Calculate overall top teams based on final evaluation score
+  // Fetch all final scores grouped by project
+  const allFinalScores = await db.query.finalScores.findMany({
+    columns: { criterionId: true, projectId: true, score: true },
+  })
+
+  const scoresByProject = new Map<number, { criterionId: string; score: number }[]>()
+  for (const row of allFinalScores) {
+    const existing = scoresByProject.get(row.projectId) ?? []
+    existing.push({ criterionId: row.criterionId, score: row.score })
+    scoresByProject.set(row.projectId, existing)
+  }
+
+  // Calculate overall top teams based on computed weighted score
   const topOverallTeams = teamsWithProjects
     .filter((team) => team.project !== null)
-    .map((team) => ({
-      projectName: team.project?.name,
-      score: team.project?.score,
-      teamName: team.name,
-    }))
+    .map((team) => {
+      const scores = scoresByProject.get(team.project?.id ?? 0) ?? []
+      return {
+        projectName: team.project?.name,
+        score: computeWeightedTotal(scores),
+        teamName: team.name,
+      }
+    })
+    .filter((team) => team.score !== null)
     .sort((a, b) => (b.score ?? 0) - (a.score ?? 0))
 
   return {

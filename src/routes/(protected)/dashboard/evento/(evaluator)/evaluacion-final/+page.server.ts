@@ -1,7 +1,6 @@
-import { projects } from '$lib/schema/projects'
+import { finalScores } from '$lib/schema/stages'
 import { db } from '$lib/server/db/database'
 import { fail } from '@sveltejs/kit'
-import { eq } from 'drizzle-orm'
 import { zod4 } from 'sveltekit-superforms/adapters'
 import { message, superValidate } from 'sveltekit-superforms/server'
 
@@ -39,13 +38,20 @@ export const load = (async () => {
       teamName: team.name,
     }))
 
-  const form = await superValidate(zod4(finalEvaluationSchema))
+  // Default form values — all scores at 0
+  const defaults: Record<string, number | string> = { projectId: '' }
+  for (const req of requirementsList) {
+    defaults[req.id] = 0
+  }
+
+  const form = await superValidate(defaults, zod4(finalEvaluationSchema), { errors: false })
 
   return { eligibleProjects, form, requirementsList }
 }) satisfies PageServerLoad
 
 export const actions: Actions = {
-  default: async ({ request }) => {
+  evaluate: async ({ locals, request }) => {
+    const user = locals.user as NonNullable<typeof locals.user>
     const form = await superValidate(request, zod4(finalEvaluationSchema))
 
     if (!form.valid) {
@@ -54,20 +60,64 @@ export const actions: Actions = {
 
     const projectId = Number.parseInt(form.data.projectId, 10)
 
-    // Calculate final score
-    let totalScore = 0
-    for (const req of requirementsList) {
-      const score = form.data[req.id] || 0
-      totalScore += score * (req.weight / 100)
-    }
-
     try {
-      await db.update(projects).set({ score: totalScore }).where(eq(projects.id, projectId))
+      // Upsert one row per criterion. Any evaluator with canEvaluateFinal=true
+      // may overwrite existing rows (intentional — evaluators are trusted).
+      await db.transaction(async (tx) => {
+        for (const req of requirementsList) {
+          const score = (form.data as unknown as Record<string, number>)[req.id] ?? 0
+
+          await tx
+            .insert(finalScores)
+            .values({
+              criterionId: req.id,
+              evaluatorId: user.id,
+              projectId,
+              score,
+            })
+            .onConflictDoUpdate({
+              set: {
+                score,
+                updatedAt: new Date(),
+              },
+              target: [finalScores.projectId, finalScores.evaluatorId, finalScores.criterionId],
+            })
+        }
+      })
 
       return message(form, { text: 'Evaluación final guardada exitosamente', type: 'success' })
     } catch (error) {
       console.error(error)
       return message(form, { text: 'Ocurrió un error al guardar la evaluación', type: 'error' })
     }
+  },
+
+  /** Load existing scores for a project+evaluator pair (called via ?/loadScores). */
+  loadScores: async ({ locals, request }) => {
+    const user = locals.user as NonNullable<typeof locals.user>
+    const data = await request.formData()
+    const projectId = Number.parseInt(data.get('projectId') as string, 10)
+
+    if (!projectId) return fail(400, { error: 'Proyecto inválido' })
+
+    const existingScores = await db.query.finalScores.findMany({
+      where: (t, { and, eq }) => and(eq(t.projectId, projectId), eq(t.evaluatorId, user.id)),
+    })
+
+    const scoreMap: Record<string, number> = {}
+    for (const row of existingScores) {
+      scoreMap[row.criterionId] = row.score
+    }
+
+    // Build defaults merged with existing scores
+    const defaults: Record<string, number | string> = {
+      projectId: String(projectId),
+    }
+    for (const req of requirementsList) {
+      defaults[req.id] = scoreMap[req.id] ?? 0
+    }
+
+    const form = await superValidate(defaults, zod4(finalEvaluationSchema))
+    return { form, requirementsList }
   },
 }
