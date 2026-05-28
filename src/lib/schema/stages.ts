@@ -1,3 +1,5 @@
+import type { InferSelectModel } from 'drizzle-orm'
+
 import { relations } from 'drizzle-orm'
 import { pgTable } from 'drizzle-orm/pg-core'
 import * as t from 'drizzle-orm/pg-core'
@@ -148,3 +150,44 @@ export const attachmentsRelations = relations(attachments, ({ one }) => ({
     references: [users.id],
   }),
 }))
+
+/**
+ * Stores per-criterion scores for the final hackathon evaluation.
+ * One row per (projectId, evaluatorId, criterionId).
+ * Any evaluator with canEvaluateFinal=true can overwrite any row (intentional design).
+ */
+export const finalScores = pgTable(
+  'final_scores',
+  {
+    criterionId: t.text('criterion_id').notNull(),
+    evaluatorId: t.text('evaluator_id').references(() => users.id, { onDelete: 'set null' }),
+    id: t.bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
+    projectId: t
+      .bigint('project_id', { mode: 'number' })
+      .references(() => projects.id, { onDelete: 'cascade' })
+      .notNull(),
+    score: t.integer('score').notNull(),
+    ...timestamps,
+  },
+  (table) => [
+    /** Ensures one row per (project, evaluator, criterion) — safe for upsert. */
+    t
+      .uniqueIndex('final_scores_project_evaluator_criterion_uidx')
+      .on(table.projectId, table.evaluatorId, table.criterionId),
+    t.index('final_scores_project_idx').on(table.projectId),
+    t.index('final_scores_evaluator_idx').on(table.evaluatorId),
+  ],
+)
+
+export const finalScoresRelations = relations(finalScores, ({ one }) => ({
+  evaluator: one(users, {
+    fields: [finalScores.evaluatorId],
+    references: [users.id],
+  }),
+  project: one(projects, {
+    fields: [finalScores.projectId],
+    references: [projects.id],
+  }),
+}))
+
+export type FinalScore = InferSelectModel<typeof finalScores>

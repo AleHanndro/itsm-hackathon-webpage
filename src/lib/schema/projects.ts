@@ -10,7 +10,6 @@ export const projects = pgTable('projects', {
   description: t.text('description'),
   id: t.bigint('id', { mode: 'number' }).primaryKey().generatedAlwaysAsIdentity(),
   name: t.text('name').notNull(),
-  score: t.real('score'),
   ...timestamps,
 })
 
