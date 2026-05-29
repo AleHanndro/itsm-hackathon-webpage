@@ -8,7 +8,7 @@
 
   const { children, data }: { children: Snippet; data: LayoutData } = $props()
 
-  const items = $derived(getUrls(data.user.role, data.canEvaluateFinal))
+  const items = $derived(getUrls(data.user.role))
 </script>
 
 <DashboardWrapper {items} user={data.user}>

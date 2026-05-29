@@ -2,7 +2,7 @@ import { db } from '$lib/server/db/database'
 
 import type { PageServerLoad } from './$types'
 
-import { requirementsList } from '../(evaluator)/evaluacion-final/schema'
+import { requirementsList } from '../evaluacion-final/schema'
 
 /** Calculates the weighted total (out of 100) from an array of final score rows. */
 function computeWeightedTotal(scores: { criterionId: string; score: number }[]): null | number {

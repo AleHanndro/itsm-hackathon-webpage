@@ -9,29 +9,16 @@ import type { Actions, PageServerLoad } from './$types'
 import { finalEvaluationSchema, requirementsList } from './schema'
 
 export const load = (async () => {
-  // Fetch total stages
-  const allStages = await db.query.stages.findMany()
-  const totalStagesCount = allStages.length
-
   const teamsWithProjects = await db.query.teams.findMany({
     where: (t, { isNotNull }) => isNotNull(t.projectId),
     with: {
-      project: {
-        with: {
-          stagesProjects: true,
-        },
-      },
+      project: true,
     },
   })
 
-  // Filter eligible projects (must have verdict === true in all stages)
+  // All teams that have a linked project are available for evaluation
   const eligibleProjects = teamsWithProjects
     .filter((team) => team.project)
-    .filter((team) => {
-      const sps = team.project?.stagesProjects
-      if (!sps || sps.length < totalStagesCount || totalStagesCount === 0) return false
-      return sps.every((sp) => sp.verdict === true)
-    })
     .map((team) => ({
       id: team.project?.id,
       name: team.project?.name,
