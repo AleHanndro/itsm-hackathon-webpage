@@ -41,6 +41,11 @@ const staffUrls: SidebarGroups = [
         title: 'Evaluaciones',
         url: '/dashboard/evento/evaluaciones',
       },
+      {
+        icon: StarIcon,
+        title: 'Evaluación Final',
+        url: '/dashboard/evento/evaluacion-final',
+      },
     ],
   },
 ]
@@ -73,20 +78,11 @@ const organizerUrls: SidebarGroups = [
   },
 ]
 
-const getEvaluatorUrls = (canEvaluateFinal: boolean): SidebarGroups => {
-  const items = getEvaluatorStagesUrls()
-  if (canEvaluateFinal) {
-    items.push({
-      icon: StarIcon,
-      title: 'Evaluación Final',
-      url: '/dashboard/evento/evaluacion-final',
-    })
-  }
-
+const getEvaluatorUrls = (): SidebarGroups => {
   return [
     {
       group: 'Evaluación',
-      items,
+      items: getEvaluatorStagesUrls(),
     },
   ]
 }
@@ -121,10 +117,15 @@ const userUrls: SidebarGroups = [
   },
 ]
 
-export const getUrls = (role: Role, canEvaluateFinal = false): SidebarGroups => {
-  if (hasRole(role, 'admin'))
-    return staffUrls.concat(adminUrls, organizerUrls, getEvaluatorUrls(canEvaluateFinal))
-  if (hasRole(role, 'evaluator')) return staffUrls.concat(getEvaluatorUrls(canEvaluateFinal))
+export const getUrls = (role: Role): SidebarGroups => {
+  if (hasRole(role, 'admin')) return staffUrls.concat(adminUrls, organizerUrls, getEvaluatorUrls())
+  if (hasRole(role, 'evaluator'))
+    return staffUrls
+      .map((group) => ({
+        ...group,
+        items: group.items.filter((item) => item.url !== '/dashboard/evento/evaluacion-final'),
+      }))
+      .concat(getEvaluatorUrls())
   if (hasRole(role, 'organizer')) return staffUrls.concat(organizerUrls)
   if (hasRole(role, 'staff')) return staffUrls
 
