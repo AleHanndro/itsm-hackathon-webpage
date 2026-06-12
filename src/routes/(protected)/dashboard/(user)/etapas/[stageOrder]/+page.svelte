@@ -104,17 +104,15 @@
             </div>
           {/if}
 
-          {#if data.verdict === null}
-            {#key currentStageOrder}
-              <UploadAttachmentForm
-                {addSlot}
-                {form}
-                {handleFileInputChange}
-                isLeader={data.isLeader}
-                {removeSlot}
-              />
-            {/key}
-          {/if}
+          {#key currentStageOrder}
+            <UploadAttachmentForm
+              {addSlot}
+              {form}
+              {handleFileInputChange}
+              isLeader={data.isLeader}
+              {removeSlot}
+            />
+          {/key}
         </Card.Content>
       </Card.Root>
     </div>
