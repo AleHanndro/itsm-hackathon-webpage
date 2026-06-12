@@ -1,5 +1,7 @@
 <script lang="ts">
   import { resolve } from '$app/paths'
+  import { buttonVariants } from '$lib/components/ui/button.svelte'
+  import * as Card from '$lib/components/ui/card'
   import Separator from '$lib/components/ui/separator.svelte'
   import { EVENT_START_DATE, userRolesMap } from '$lib/consts'
   import { formatDate } from '$lib/utils'
@@ -25,6 +27,24 @@
 
 {#if data.teamInfo}
   <div class="mt-8 space-y-6 p-4">
+    <Card.Root>
+      <Card.Content class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div class="space-y-1">
+          <Card.Title>Gracias por tu participación</Card.Title>
+          <Card.Description>
+            Descarga tu certificado para comprobar tu participación en el ITSM Hackatón 2026.
+          </Card.Description>
+        </div>
+        <a
+          class={[buttonVariants({ size: 'lg' }), 'w-full sm:w-auto']}
+          download
+          href={resolve('/(protected)/api/certificate/[name]', { name: data.user.name })}
+        >
+          Descargar certificado
+        </a>
+      </Card.Content>
+    </Card.Root>
+
     <div>
       <h2 class="text-xl font-bold">Tu Equipo: {data.teamInfo.name}</h2>
       <div class="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
