@@ -51,8 +51,8 @@
     <p class="mt-2 text-muted-foreground">{data.stage.description || 'Sin descripción'}</p>
   </div>
 
-  <div class="grid gap-6 md:grid-cols-[1fr_var(--breakpoint-md)]">
-    <div class="space-y-6">
+  <div class="grid gap-6 md:grid-cols-[minmax(0,1fr)_var(--breakpoint-md)]">
+    <div class="min-w-0 space-y-6">
       <Card.Root>
         <Card.Header>
           <Card.Title>Estado de Evaluación</Card.Title>
@@ -82,14 +82,14 @@
             Solo el líder del equipo puede enviar el archivo correspondiente a esta etapa.
           </Card.Description>
         </Card.Header>
-        <Card.Content class="space-y-4">
+        <Card.Content class="min-w-0 space-y-4">
           {#if data.attachments && data.attachments.length > 0}
-            <div class="flex flex-col gap-2 rounded-lg border p-4">
+            <div class="flex min-w-0 flex-col gap-2 rounded-lg border p-4">
               <h3 class="text-sm font-semibold">Archivos Subidos</h3>
-              <div class="flex flex-col gap-1.5">
+              <div class="flex min-w-0 flex-col gap-1.5">
                 {#each data.attachments as attachment (attachment.id)}
                   <a
-                    class="flex items-center gap-2 text-sm text-blue-600 hover:underline dark:text-blue-400"
+                    class="flex max-w-full min-w-0 items-center gap-2 overflow-hidden text-sm text-blue-600 hover:underline dark:text-blue-400"
                     href={resolve('/(protected)/api/attachments/[id]', {
                       id: attachment.id.toString(),
                     })}
@@ -97,7 +97,7 @@
                     target="_blank"
                   >
                     <PaperclipIcon class="size-4 shrink-0" />
-                    <span class="truncate">{attachment.fileName}</span>
+                    <span class="min-w-0 flex-1 truncate">{attachment.fileName}</span>
                   </a>
                 {/each}
               </div>
